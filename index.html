@@ -1,0 +1,163 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Pulp</title>
+  <!-- Import Courier Prime font -->
+  <link href="https://fonts.googleapis.com/css2?family=Courier+Prime&display=swap" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Courier Prime', monospace;
+      overflow-x: hidden;
+    }
+    #header {
+      position: fixed;
+      top: 20px;
+      left: 0;
+      right: 0;
+      padding: 0 15px;
+      background: transparent;
+      z-index: 1000;
+    }
+    #header img {
+      height: 60px;
+    }
+    main {
+      padding: 100px 16px 140px;
+    }
+    .date {
+      text-align: right;
+      font-size: 14px;
+      font-weight: 400;
+      margin-bottom: 60px;
+    }
+    .placeholder {
+      position: relative;
+      margin-bottom: 225px;
+      cursor: pointer;
+    }
+    .placeholder img {
+      width: 100%;
+      height: 35vh;
+      object-fit: cover;
+      transition: transform 0.3s ease-in-out;
+    }
+    .placeholder img.show-info {
+      transform: scale(1.2) translateY(-10px);
+    }
+    .placeholder .info {
+      max-height: 0;
+      overflow: hidden;
+      opacity: 0;
+      transition: max-height 0.4s ease, opacity 0.3s ease;
+      padding: 0 16px;
+      font-size: 16px;
+      line-height: 1.4;
+      color: #000;
+    }
+    .placeholder.show-info .info {
+      max-height: 500px;
+      opacity: 1;
+      margin-top: 10px;
+    }
+    .ad-placeholder {
+      height: 35vh;
+      background: yellow;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      font-weight: bold;
+      margin-bottom: 225px;
+    }
+    #bottom-nav {
+      position: fixed;
+      bottom: 20px;
+      left: 16px;
+      display: flex;
+      gap: 8px;
+      z-index: 1000;
+    }
+    #bottom-nav img {
+      height: 40px;
+    }
+    nav button {
+      background: none;
+      border: none;
+      padding: 0;
+    }
+  </style>
+</head>
+<body>
+  <div id="header">
+    <img src="assets/logo.png" alt="Logo">
+  </div>
+  <main>
+    <div class="date">March, 2025 no 1.</div>
+    <div id="items-container"></div>
+  </main>
+  <nav id="bottom-nav">
+    <button id="news-btn"><img src="assets/newsselect.png" alt="News"></button>
+    <button id="pulp-btn"><img src="assets/pulp.png" alt="Pulp"></button>
+  </nav>
+  <script>
+    const newsItems = [
+      { imagePath: 'assets/news1.png', info: 'A recent investigation has revealed a nearly untraceable budget line item responsible for $4.7 trillion in payments. This discovery has raised questions about governmental transparency and fiscal responsibility, leading to calls for a thorough audit and accountability measures.\\n\\nSource: democracynow.org' },
+      { imagePath: 'assets/news2.png', info: 'Detailed inquiry into government spending continues...' },
+      { imagePath: 'assets/news3.png', info: 'Sources reveal surprising twists in the investigation...' },
+      { imagePath: 'assets/news4.png', info: 'Officials respond to concerns regarding transparency...' },
+      { imagePath: 'assets/news5.png', info: 'Further audits may be necessary...' },
+    ];
+    const pulpItems = [
+      { imagePath: 'assets/pulp1.png', info: 'Sensational revelations stir up intrigue and mystery...' },
+      { imagePath: 'assets/pulp2.png', info: 'A thrilling tale of scandal unfolds in unexpected ways...' },
+      { imagePath: 'assets/pulp3.png', info: 'Investigative reporters uncover shocking secrets...' },
+      { imagePath: 'assets/pulp4.png', info: 'Rumors of high-stakes drama and hidden alliances...' },
+      { imagePath: 'assets/pulp5.png', info: 'Further developments promise more twists...' },
+    ];
+    let isNewsPage = true;
+    const itemsContainer = document.getElementById('items-container');
+    const newsBtn = document.getElementById('news-btn');
+    const pulpBtn = document.getElementById('pulp-btn');
+    function render() {
+      itemsContainer.innerHTML = '';
+      const currentItems = isNewsPage ? newsItems : pulpItems;
+      currentItems.forEach((item, index) => {
+        const placeholder = document.createElement('div');
+        placeholder.className = 'placeholder';
+        const img = document.createElement('img');
+        img.src = item.imagePath;
+        placeholder.appendChild(img);
+        const infoDiv = document.createElement('div');
+        infoDiv.className = 'info';
+        infoDiv.textContent = item.info;
+        placeholder.appendChild(infoDiv);
+        placeholder.addEventListener('click', () => {
+          placeholder.classList.toggle('show-info');
+          img.classList.toggle('show-info');
+        });
+        itemsContainer.appendChild(placeholder);
+        if (index === 1 || index === 3) {
+          const ad = document.createElement('div');
+          ad.className = 'ad-placeholder';
+          ad.textContent = 'Ad Placeholder';
+          itemsContainer.appendChild(ad);
+        }
+      });
+      newsBtn.querySelector('img').src = isNewsPage ? 'assets/newsselect.png' : 'assets/news.png';
+      pulpBtn.querySelector('img').src = isNewsPage ? 'assets/pulp.png' : 'assets/pulpselect.png';
+    }
+    newsBtn.addEventListener('click', () => {
+      if (!isNewsPage) { isNewsPage = true; render(); }
+    });
+    pulpBtn.addEventListener('click', () => {
+      if (isNewsPage) { isNewsPage = false; render(); }
+    });
+    render();
+  </script>
+</body>
+</html>
