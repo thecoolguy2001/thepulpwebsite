@@ -1,5 +1,3 @@
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -13,12 +11,13 @@
       margin: 0;
       font-family: 'Courier Prime', monospace;
       overflow-x: hidden;
+      position: relative;
+      min-height: 100vh;
     }
     #header {
       position: fixed;
       top: 20px;
-      left: 0;
-      right: 0;
+      left: 16px;
       padding: 0 15px;
       background: transparent;
       z-index: 1000;
@@ -27,24 +26,31 @@
       height: 60px;
     }
     main {
-      padding: 100px 16px 140px;
+      padding-top: 100px;
+      padding-bottom: 140px;
+      padding-left: 16px;
+      padding-right: 16px;
     }
     .date {
-      text-align: right;
+      position: fixed;
+      top: 32px;
+      right: 16px;
+      margin: 0;
       font-size: 14px;
       font-weight: 400;
-      margin-bottom: 60px;
+      text-align: right;
     }
     .placeholder {
+      width: 300px;
+      margin: 0 auto 20px;
       position: relative;
-      margin-bottom: 225px;
       cursor: pointer;
     }
     .placeholder img {
       width: 100%;
-      height: 35vh;
-      object-fit: cover;
-      transition: transform 0.3s ease-in-out;
+      height: auto;
+      object-fit: contain;
+      display: block;
     }
     .placeholder img.show-info {
       transform: scale(1.2) translateY(-10px);
@@ -65,30 +71,79 @@
       margin-top: 10px;
     }
     .ad-placeholder {
-      height: 35vh;
+      width: 300px;
+      height: 200px;
+      margin: 0 auto 20px;
       background: yellow;
       display: flex;
       align-items: center;
       justify-content: center;
       font-size: 18px;
       font-weight: bold;
-      margin-bottom: 225px;
     }
     #bottom-nav {
       position: fixed;
-      bottom: 20px;
-      left: 16px;
+      bottom: 32px;
+      left: 32px;
       display: flex;
       gap: 8px;
       z-index: 1000;
     }
     #bottom-nav img {
-      height: 40px;
+      height: 60px;
     }
     nav button {
       background: none;
       border: none;
       padding: 0;
+    }
+    /* About/Contact Sections */
+    .info-section {
+      width: 100%;
+      max-width: 600px;
+      margin: 0 auto 0;
+      text-align: center;
+      max-height: 0;
+      overflow: hidden;
+      opacity: 0;
+      transition: max-height 0.4s ease, opacity 0.3s ease;
+      font-size: 16px;
+      line-height: 1.5;
+      color: #000;
+      display: block;
+    }
+    .info-section.show {
+      max-height: 500px; /* or enough to show content */
+      opacity: 1;
+      margin: 75px auto 5px;
+    }
+    #footer-links {
+      position: absolute;
+      bottom: 32px;
+      right: 32px;
+      font-family: 'Courier Prime', monospace;
+      font-size: 14px;
+      text-transform: lowercase;
+      letter-spacing: 0.5px;
+    }
+    #footer-links a {
+      margin: 0 16px;
+      text-decoration: none;
+      color: #000;
+      cursor: pointer;
+    }
+    #footer-links a.active {
+      text-decoration: underline;
+    }
+    /* Reset default list margins/padding inside contact section */
+    #contact-section ul {
+      margin: 0;
+      padding: 0;
+      list-style-position: inside;
+    }
+    /* Ensure the first paragraph in contact has no extra top margin */
+    #contact-section p {
+      margin-top: 0;
     }
   </style>
 </head>
@@ -99,6 +154,38 @@
   <main>
     <div class="date">March, 2025 no 1.</div>
     <div id="items-container"></div>
+    <!-- About and Contact Content -->
+    <div id="about-section" class="info-section">
+      <p style="margin-bottom:16px;">
+        Old York Times is a digital magazine that blends modern news with the flair of vintage pulp fiction. Bringing you curated articles with a retro aesthetic, capturing the spirit of sensational journalism. Explore a world where news meets bold, captivating style that makes every headline feel like a one-of-a-kind experience.
+      </p>
+      <p style="margin-bottom:8px;">
+        <a href="#" style="text-decoration:underline; font-size:16px; color:#000;">subscribe</a>
+      </p>
+      <p style="margin-bottom:8px;">
+        <a href="#" style="text-decoration:underline; font-size:16px; color:#000;">submissions</a>
+      </p>
+      <p style="margin-bottom:8px">
+        <a href="#" style="text-decoration:underline; font-size:16px; color:#000;">donate</a>
+      </p>
+    </div>
+    <div id="contact-section" class="info-section">
+      <div>
+        <p>Contact Us:</p>
+        <p>Email: editor@thepulpmagazine.com</p>
+        <p>Follow us on social media:</p>
+        <ul>
+          <li>Twitter: @ThePulpMag</li>
+          <li>Instagram: @ThePulpMag</li>
+          <li>Facebook: /ThePulpMag</li>
+        </ul>
+        <p>For submissions or inquiries, please reach out using the email above.</p>
+      </div>
+    </div>
+    <div id="footer-links">
+      <a id="about-link">about</a>
+      <a id="contact-link">contact</a>
+    </div>
   </main>
   <nav id="bottom-nav">
     <button id="news-btn"><img src="assets/newsselect.png" alt="News"></button>
@@ -152,12 +239,58 @@
       pulpBtn.querySelector('img').src = isNewsPage ? 'assets/pulp.png' : 'assets/pulpselect.png';
     }
     newsBtn.addEventListener('click', () => {
-      if (!isNewsPage) { isNewsPage = true; render(); }
+      if (!isNewsPage) { isNewsPage = true; showItemsSection(); }
     });
     pulpBtn.addEventListener('click', () => {
-      if (isNewsPage) { isNewsPage = false; render(); }
+      if (isNewsPage) { isNewsPage = false; showItemsSection(); }
     });
     render();
+
+    // Toggle About/Contact Sections
+    const aboutLink = document.getElementById('about-link');
+    const contactLink = document.getElementById('contact-link');
+    const aboutSection = document.getElementById('about-section');
+    const contactSection = document.getElementById('contact-section');
+    function hideAllSections() {
+      aboutSection.classList.remove('show');
+      contactSection.classList.remove('show');
+      aboutLink.classList.remove('active');
+      contactLink.classList.remove('active');
+      aboutLink.textContent = 'about';
+      contactLink.textContent = 'contact';
+    }
+    aboutLink.addEventListener('click', () => {
+      if (aboutSection.classList.contains('show')) {
+        // If already visible, hide it
+        hideAllSections();
+      } else {
+        // Otherwise, hide any other section and show about
+        hideAllSections();
+        aboutSection.classList.add('show');
+        aboutLink.classList.add('active');
+        aboutLink.textContent = 'about^';
+      }
+    });
+    contactLink.addEventListener('click', () => {
+      if (contactSection.classList.contains('show')) {
+        // If already visible, hide it
+        hideAllSections();
+      } else {
+        // Otherwise, hide any other section and show contact
+        hideAllSections();
+        contactSection.classList.add('show');
+        contactLink.classList.add('active');
+        contactLink.textContent = 'contact^';
+      }
+    });
+    // When switching between News/Pulp, hide sections
+    function showItemsSection() {
+      hideAllSections();
+      // Ensures link texts are reset (redundant, but explicit as per instructions)
+      aboutLink.textContent = 'about';
+      contactLink.textContent = 'contact';
+      render();
+    }
   </script>
 </body>
 </html>
