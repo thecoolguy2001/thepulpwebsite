@@ -131,12 +131,37 @@
     }
     #footer-links a {
       margin: 0 16px;
-      text-decoration: none;
+      text-decoration: underline;
       color: #000;
       cursor: pointer;
     }
-    #footer-links a.active {
-      text-decoration: underline;
+    /* About link shows ^ on hover or when active */
+    #about-link:hover::after,
+    #about-link.active::after {
+      content: "^";
+    }
+    /* When "about" is active and hovered, remove the caret */
+    #about-link.active:hover::after {
+      content: "";
+    }
+
+    /* Contact link shows > on hover or when active */
+    #contact-link:hover::after,
+    #contact-link.active::after {
+      content: ">";
+    }
+    /* When "contact" is active and hovered, remove the caret */
+    #contact-link.active:hover::after {
+      content: "";
+    }
+
+    /* Subscribe, Submissions, Donate behave like contact (show ">" on hover) */
+    #about-section a:hover::after {
+      content: ">";
+    }
+    /* If these get an active class, also show ">" */
+    #about-section a.active::after {
+      content: ">";
     }
     /* Reset default list margins/padding inside contact section */
     #contact-section ul {
@@ -271,7 +296,7 @@
         hideAllSections();
         aboutSection.classList.add('show');
         aboutLink.classList.add('active');
-        aboutLink.textContent = 'about^';
+        aboutLink.textContent = 'about';
       }
     });
     contactLink.addEventListener('click', () => {
@@ -283,7 +308,7 @@
         hideAllSections();
         contactSection.classList.add('show');
         contactLink.classList.add('active');
-        contactLink.textContent = 'contact^';
+        contactLink.textContent = 'contact';
       }
     });
     // When switching between News/Pulp, hide sections
