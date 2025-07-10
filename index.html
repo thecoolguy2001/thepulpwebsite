@@ -4,330 +4,517 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>The Pulp</title>
-  <!-- Import Courier Prime font -->
-  <link href="https://fonts.googleapis.com/css2?family=Courier+Prime&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
   <style>
-    body {
+    * {
       margin: 0;
-      font-family: 'Courier Prime', monospace;
-      overflow-x: hidden;
-      position: relative;
-      min-height: 100vh;
-    }
-    #header {
-      position: fixed;
-      top: 20px;
-      left: 16px;
-      padding: 0 15px;
-      background: transparent;
-      z-index: 1000;
-    }
-    #header img {
-      height: 60px;
-    }
-    main {
-      padding-top: 100px;
-      padding-bottom: 140px;
-      padding-left: 16px;
-      padding-right: 16px;
-    }
-    #items-container {
-      margin-top: 100px;
-    }
-    .date {
-      position: fixed;
-      top: 32px;
-      right: 16px;
-      margin: 0;
-      font-size: 14px;
-      font-weight: 400;
-      text-align: right;
-    }
-    .placeholder {
-      width: 250px;
-      margin: 0 auto;
-      position: relative;
-      cursor: pointer;
-      margin-bottom: 250px;
-    }
-    #items-container .placeholder:last-child {
-      margin-bottom: 150px;
-    }
-    .ad-placeholder:last-child {
-      margin-bottom: 50px;
-    }
-    .placeholder img {
-      width: 100%;
-      height: auto;
-      object-fit: contain;
-      display: block;
-    }
-    .placeholder img.show-info {
-      transform: scale(1.2) translateY(-10px);
-    }
-    .placeholder .info {
-      display: block;
-      width: 100%;
-      box-sizing: border-box;
-      max-height: 0;
-      overflow: hidden;
-      opacity: 0;
-      transition: max-height 0.4s ease, opacity 0.3s ease;
       padding: 0;
-      font-size: 16px;
-      line-height: 1.4;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Courier Prime', monospace;
+      background: #fff;
+      color: #000;
+      overflow-x: hidden;
+    }
+
+         /* Main Container */
+     .container {
+       min-height: 100vh;
+     }
+
+    /* Welcome Screen */
+         .welcome-screen {
+       display: flex;
+       flex-direction: column;
+       align-items: center;
+       justify-content: center;
+       min-height: 100vh;
+       text-align: center;
+       padding: 2rem;
+     }
+
+     .welcome-logo {
+       height: 120px;
+       margin-bottom: 2rem;
+     }
+
+    .welcome-subtitle {
+      font-size: 1.2rem;
+      margin-bottom: 3rem;
+      max-width: 600px;
+      line-height: 1.5;
+    }
+
+         .start-btn {
+       background: #d2691e;
+       color: #fff;
+       border: none;
+       padding: 1rem 3rem;
+       font-family: 'Courier Prime', monospace;
+       font-size: 1.1rem;
+       font-weight: 700;
+       text-transform: uppercase;
+       letter-spacing: 1px;
+       cursor: pointer;
+       transition: all 0.2s ease;
+       border: 2px solid #d2691e;
+     }
+
+     .start-btn:hover {
+       background: #fff;
+       color: #d2691e;
+     }
+
+    /* Quiz Screen */
+         .quiz-screen {
+       display: none;
+       flex-direction: column;
+       align-items: center;
+       justify-content: center;
+       min-height: 100vh;
+       padding: 2rem;
+       text-align: center;
+     }
+
+     .quiz-progress {
+       position: fixed;
+       top: 0;
+       left: 0;
+       right: 0;
+       height: 4px;
+       background: #f0f0f0;
+       z-index: 999;
+     }
+
+    .quiz-progress-bar {
+      height: 100%;
+      background: #ff0000;
+      width: 0%;
+      transition: width 0.3s ease;
+    }
+
+    .question-container {
+      max-width: 800px;
+      width: 100%;
+    }
+
+    .question-number {
+      font-size: 1rem;
+      color: #666;
+      margin-bottom: 1rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .question-title {
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin-bottom: 3rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      line-height: 1.2;
+    }
+
+    .answers-grid {
+      display: grid;
+      gap: 1rem;
+      margin-bottom: 3rem;
+    }
+
+    .answer-btn {
+      background: #fff;
+      color: #000;
+      border: 2px solid #000;
+      padding: 1.5rem;
+      font-family: 'Courier Prime', monospace;
+      font-size: 1.1rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-align: left;
+    }
+
+    .answer-btn:hover {
+      background: #ff0000;
+      color: #fff;
+      border-color: #ff0000;
+    }
+
+    .answer-btn.selected {
+      background: #ff0000;
+      color: #fff;
+      border-color: #ff0000;
+    }
+
+    .next-btn {
+      background: #000;
+      color: #fff;
+      border: 2px solid #000;
+      padding: 1rem 2rem;
+      font-family: 'Courier Prime', monospace;
+      font-size: 1rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      opacity: 0.5;
+      pointer-events: none;
+    }
+
+    .next-btn.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .next-btn.active:hover {
+      background: #fff;
       color: #000;
     }
-    .placeholder.show-info .info {
-      max-height: 500px;
-      opacity: 1;
-      margin-top: 50px;
+
+    /* Product Screen */
+    .product-screen {
+      display: none;
+      padding: 2rem;
+      max-width: 1200px;
+      margin: 0 auto;
     }
-    .ad-placeholder {
-      width: 300px;
-      height: 200px;
-      margin: 0 auto 250px;
-      background: yellow;
+
+    .product-hero {
+      text-align: center;
+      margin-bottom: 4rem;
+    }
+
+    .product-title {
+      font-size: 3rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      margin-bottom: 1rem;
+    }
+
+    .product-subtitle {
+      font-size: 1.2rem;
+      color: #666;
+      margin-bottom: 2rem;
+    }
+
+    .products-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 2rem;
+      margin-bottom: 4rem;
+    }
+
+    .product-card {
+      border: 2px solid #000;
+      transition: all 0.2s ease;
+      cursor: pointer;
+    }
+
+    .product-card:hover {
+      border-color: #ff0000;
+    }
+
+    .product-image {
+      width: 100%;
+      height: 300px;
+      background: #f5f5f5;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 18px;
-      font-weight: bold;
+      font-size: 1.2rem;
+      color: #666;
+      text-transform: uppercase;
+      letter-spacing: 1px;
     }
-    #bottom-nav {
-      position: fixed;
-      bottom: 32px;
-      left: 32px;
-      display: flex;
-      gap: 8px;
-      z-index: 1000;
-    }
-    #bottom-nav img {
-      height: 60px;
-    }
-    nav button {
-      background: none;
-      border: none;
-      padding: 0;
-    }
-    /* About/Contact Sections */
-    .info-section {
-      width: 100%;
-      max-width: 600px;
-      margin: 0 auto 0;
+
+    .product-info {
+      padding: 1.5rem;
       text-align: center;
-      max-height: 0;
-      overflow: hidden;
-      opacity: 0;
-      transition: max-height 0.4s ease, opacity 0.3s ease;
-      font-size: 16px;
-      line-height: 1.5;
-      color: #000;
-      display: block;
-    }
-    .info-section.show {
-      max-height: 500px; /* or enough to show content */
-      opacity: 1;
-      margin: 75px auto 5px;
-    }
-    #footer-links {
-      position: absolute;
-      bottom: 32px;
-      right: 32px;
-      font-family: 'Courier Prime', monospace;
-      font-size: 14px;
-      text-transform: lowercase;
-      letter-spacing: 0.5px;
-    }
-    #footer-links a {
-      margin: 0 16px;
-      text-decoration: underline;
-      color: #000;
-      cursor: pointer;
-    }
-    /* About link shows ^ on hover or when active */
-    #about-link:hover::after,
-    #about-link.active::after {
-      content: "^";
-    }
-    /* When "about" is active and hovered, remove the caret */
-    #about-link.active:hover::after {
-      content: "";
     }
 
-    /* Contact link shows > on hover or when active */
-    #contact-link:hover::after,
-    #contact-link.active::after {
-      content: ">";
-    }
-    /* When "contact" is active and hovered, remove the caret */
-    #contact-link.active:hover::after {
-      content: "";
+    .product-name {
+      font-size: 1.3rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      margin-bottom: 0.5rem;
+      letter-spacing: 1px;
     }
 
-    /* Subscribe, Submissions, Donate behave like contact (show ">" on hover) */
-    #about-section a:hover::after {
-      content: ">";
+    .product-price {
+      font-size: 1.1rem;
+      color: #ff0000;
+      font-weight: 700;
     }
-    /* If these get an active class, also show ">" */
-    #about-section a.active::after {
-      content: ">";
-    }
-    /* Reset default list margins/padding inside contact section */
-    #contact-section ul {
-      margin: 0;
-      padding: 0;
-      list-style-position: inside;
-    }
-    /* Ensure the first paragraph in contact has no extra top margin */
-    #contact-section p {
-      margin-top: 0;
-    }
+
+         .back-btn {
+       position: fixed;
+       top: 2rem;
+       left: 2rem;
+       background: none;
+       border: none;
+       font-family: 'Courier Prime', monospace;
+       font-size: 1rem;
+       text-transform: uppercase;
+       letter-spacing: 1px;
+       cursor: pointer;
+       color: #666;
+       transition: color 0.2s ease;
+     }
+
+         .back-btn:hover {
+       color: #d2691e;
+     }
+
+         /* Responsive */
+     @media (max-width: 768px) {
+       .welcome-logo {
+         height: 80px;
+       }
+
+       .question-title {
+         font-size: 1.8rem;
+       }
+
+       .product-title {
+         font-size: 2rem;
+       }
+
+       .answers-grid {
+         gap: 0.5rem;
+       }
+
+       .answer-btn {
+         padding: 1rem;
+         font-size: 1rem;
+       }
+
+       .products-grid {
+         grid-template-columns: 1fr;
+         gap: 1rem;
+       }
+     }
   </style>
 </head>
 <body>
-  <div id="header">
-    <img src="assets/logo.png" alt="Logo">
-  </div>
-  <main>
-    <div class="date">March, 2025 no 1.</div>
-    <div id="items-container"></div>
-    <!-- About and Contact Content -->
-    <div id="about-section" class="info-section">
-      <p style="margin-bottom:16px;">
-        Old York Times is a digital magazine that blends modern news with the flair of vintage pulp fiction. Bringing you curated articles with a retro aesthetic, capturing the spirit of sensational journalism. Explore a world where news meets bold, captivating style that makes every headline feel like a one-of-a-kind experience.
+  <div class="container">
+    <!-- Welcome Screen -->
+    <div class="welcome-screen" id="welcome-screen">
+      <img src="assets/logo.png" alt="The Pulp" class="welcome-logo">
+      <p class="welcome-subtitle">
+        Discover your perfect match from our curated collection. 
+        Answer a few questions to find products tailored to your taste.
       </p>
-      <p style="margin-bottom:8px;">
-        <a href="#" style="text-decoration:underline; font-size:16px; color:#000;">subscribe</a>
-      </p>
-      <p style="margin-bottom:8px;">
-        <a href="#" style="text-decoration:underline; font-size:16px; color:#000;">submissions</a>
-      </p>
-      <p style="margin-bottom:8px">
-        <a href="#" style="text-decoration:underline; font-size:16px; color:#000;">donate</a>
-      </p>
+      <button class="start-btn" onclick="startQuiz()">Start Quiz</button>
     </div>
-    <div id="contact-section" class="info-section">
-      <div>
-        <p>Contact Us:</p>
-        <p>Email: editor@thepulpmagazine.com</p>
-        <p>Follow us on social media:</p>
-        <ul>
-          <li>Twitter: @ThePulpMag</li>
-          <li>Instagram: @ThePulpMag</li>
-          <li>Facebook: /ThePulpMag</li>
-        </ul>
-        <p>For submissions or inquiries, please reach out using the email above.</p>
+
+    <!-- Quiz Screen -->
+    <div class="quiz-screen" id="quiz-screen">
+      <div class="quiz-progress">
+        <div class="quiz-progress-bar" id="progress-bar"></div>
+      </div>
+
+      <div class="question-container">
+        <div class="question-number" id="question-number">Question 1 of 4</div>
+        <h2 class="question-title" id="question-title"></h2>
+        <div class="answers-grid" id="answers-grid"></div>
+        <button class="next-btn" id="next-btn" onclick="nextQuestion()">Next</button>
       </div>
     </div>
-    <div id="footer-links">
-      <a id="about-link">about</a>
-      <a id="contact-link">contact</a>
-    </div>
-  </main>
-  <nav id="bottom-nav">
-    <button id="news-btn"><img src="assets/newsselect.png" alt="News"></button>
-    <button id="pulp-btn"><img src="assets/pulp.png" alt="Pulp"></button>
-  </nav>
-  <script>
-    const newsItems = [
-      { imagePath: 'assets/news1.png', info: 'A recent investigation has revealed a nearly untraceable budget line item responsible for $4.7 trillion in payments. This discovery has raised questions about governmental transparency and fiscal responsibility, leading to calls for a thorough audit and accountability measures.\\n\\nSource: democracynow.org' },
-      { imagePath: 'assets/news2.png', info: 'Detailed inquiry into government spending continues...' },
-      { imagePath: 'assets/news3.png', info: 'Sources reveal surprising twists in the investigation...' },
-      { imagePath: 'assets/news4.png', info: 'Officials respond to concerns regarding transparency...' },
-      { imagePath: 'assets/news5.png', info: 'Further audits may be necessary...' },
-    ];
-    const pulpItems = [
-      { imagePath: 'assets/pulp1.png', info: 'Sensational revelations stir up intrigue and mystery...' },
-      { imagePath: 'assets/pulp2.png', info: 'A thrilling tale of scandal unfolds in unexpected ways...' },
-      { imagePath: 'assets/pulp3.png', info: 'Investigative reporters uncover shocking secrets...' },
-      { imagePath: 'assets/pulp4.png', info: 'Rumors of high-stakes drama and hidden alliances...' },
-      { imagePath: 'assets/pulp5.png', info: 'Further developments promise more twists...' },
-    ];
-    let isNewsPage = true;
-    const itemsContainer = document.getElementById('items-container');
-    const newsBtn = document.getElementById('news-btn');
-    const pulpBtn = document.getElementById('pulp-btn');
-    function render() {
-      itemsContainer.innerHTML = '';
-      const currentItems = isNewsPage ? newsItems : pulpItems;
-      currentItems.forEach((item, index) => {
-        const placeholder = document.createElement('div');
-        placeholder.className = 'placeholder';
-        const img = document.createElement('img');
-        img.src = item.imagePath;
-        placeholder.appendChild(img);
-        const infoDiv = document.createElement('div');
-        infoDiv.className = 'info';
-        infoDiv.textContent = item.info;
-        placeholder.appendChild(infoDiv);
-        placeholder.addEventListener('click', () => {
-          placeholder.classList.toggle('show-info');
-          img.classList.toggle('show-info');
-        });
-        itemsContainer.appendChild(placeholder);
-        if (index === 1 || index === 3) {
-          const ad = document.createElement('div');
-          ad.className = 'ad-placeholder';
-          ad.textContent = 'Ad Placeholder';
-          itemsContainer.appendChild(ad);
-        }
-      });
-      newsBtn.querySelector('img').src = isNewsPage ? 'assets/newsselect.png' : 'assets/news.png';
-      pulpBtn.querySelector('img').src = isNewsPage ? 'assets/pulp.png' : 'assets/pulpselect.png';
-    }
-    newsBtn.addEventListener('click', () => {
-      if (!isNewsPage) { isNewsPage = true; showItemsSection(); }
-    });
-    pulpBtn.addEventListener('click', () => {
-      if (isNewsPage) { isNewsPage = false; showItemsSection(); }
-    });
-    render();
 
-    // Toggle About/Contact Sections
-    const aboutLink = document.getElementById('about-link');
-    const contactLink = document.getElementById('contact-link');
-    const aboutSection = document.getElementById('about-section');
-    const contactSection = document.getElementById('contact-section');
-    function hideAllSections() {
-      aboutSection.classList.remove('show');
-      contactSection.classList.remove('show');
-      aboutLink.classList.remove('active');
-      contactLink.classList.remove('active');
-      aboutLink.textContent = 'about';
-      contactLink.textContent = 'contact';
+    <!-- Product Screen -->
+    <div class="product-screen" id="product-screen">
+      <button class="back-btn" onclick="restartQuiz()">← Back to Quiz</button>
+      
+      <div class="product-hero">
+        <h1 class="product-title" id="product-category-title">Your Matches</h1>
+        <p class="product-subtitle" id="product-category-subtitle">Based on your preferences</p>
+      </div>
+
+      <div class="products-grid" id="products-grid"></div>
+    </div>
+  </div>
+
+  <script>
+    const questions = [
+      {
+        title: "What's your vibe?",
+        answers: [
+          { text: "Bold & Statement-making", value: "bold" },
+          { text: "Clean & Minimalist", value: "minimal" },
+          { text: "Vintage & Nostalgic", value: "vintage" },
+          { text: "Edgy & Underground", value: "edgy" }
+        ]
+      },
+      {
+        title: "How do you prefer to consume content?",
+        answers: [
+          { text: "Quick reads & Headlines", value: "quick" },
+          { text: "Deep dives & Analysis", value: "deep" },
+          { text: "Visual storytelling", value: "visual" },
+          { text: "Interactive experiences", value: "interactive" }
+        ]
+      },
+      {
+        title: "What interests you most?",
+        answers: [
+          { text: "Current events & News", value: "news" },
+          { text: "Culture & Arts", value: "culture" },
+          { text: "Technology & Innovation", value: "tech" },
+          { text: "Lifestyle & Trends", value: "lifestyle" }
+        ]
+      },
+      {
+        title: "Your ideal purchase?",
+        answers: [
+          { text: "Limited edition collectible", value: "limited" },
+          { text: "Everyday essential", value: "essential" },
+          { text: "Statement piece", value: "statement" },
+          { text: "Digital experience", value: "digital" }
+        ]
+      }
+    ];
+
+    const productCategories = {
+      bold: {
+        title: "Bold Collection",
+        subtitle: "Make a statement",
+        products: [
+          { name: "Bold Tee", price: "$45", image: "Bold Statement Piece" },
+          { name: "Statement Hoodie", price: "$85", image: "Eye-catching Design" },
+          { name: "Limited Print", price: "$65", image: "Exclusive Artwork" }
+        ]
+      },
+      minimal: {
+        title: "Essential Collection",
+        subtitle: "Clean and timeless",
+        products: [
+          { name: "Classic Tee", price: "$35", image: "Minimalist Design" },
+          { name: "Essential Hoodie", price: "$75", image: "Clean Lines" },
+          { name: "Simple Cap", price: "$45", image: "Understated Style" }
+        ]
+      },
+      vintage: {
+        title: "Heritage Collection",
+        subtitle: "Nostalgic classics",
+        products: [
+          { name: "Vintage Logo Tee", price: "$50", image: "Retro Aesthetic" },
+          { name: "Classic Crewneck", price: "$80", image: "Timeless Appeal" },
+          { name: "Heritage Jacket", price: "$120", image: "Vintage Inspired" }
+        ]
+      },
+      edgy: {
+        title: "Underground Collection",
+        subtitle: "For the rebels",
+        products: [
+          { name: "Edgy Graphic Tee", price: "$55", image: "Bold Graphics" },
+          { name: "Street Hoodie", price: "$90", image: "Urban Style" },
+          { name: "Rebel Accessories", price: "$35", image: "Edgy Details" }
+        ]
+      }
+    };
+
+    let currentQuestion = 0;
+    let answers = [];
+    let selectedAnswer = null;
+
+    function startQuiz() {
+      document.getElementById('welcome-screen').style.display = 'none';
+      document.getElementById('quiz-screen').style.display = 'flex';
+      showQuestion();
     }
-    aboutLink.addEventListener('click', () => {
-      if (aboutSection.classList.contains('show')) {
-        // If already visible, hide it
-        hideAllSections();
+
+    function showQuestion() {
+      const question = questions[currentQuestion];
+      const progress = ((currentQuestion + 1) / questions.length) * 100;
+
+      document.getElementById('progress-bar').style.width = progress + '%';
+      document.getElementById('question-number').textContent = `Question ${currentQuestion + 1} of ${questions.length}`;
+      document.getElementById('question-title').textContent = question.title;
+
+      const answersGrid = document.getElementById('answers-grid');
+      answersGrid.innerHTML = '';
+
+      question.answers.forEach((answer, index) => {
+        const button = document.createElement('button');
+        button.className = 'answer-btn';
+        button.textContent = answer.text;
+        button.onclick = () => selectAnswer(index, answer.value);
+        answersGrid.appendChild(button);
+      });
+
+      selectedAnswer = null;
+      document.getElementById('next-btn').classList.remove('active');
+    }
+
+    function selectAnswer(index, value) {
+      document.querySelectorAll('.answer-btn').forEach(btn => btn.classList.remove('selected'));
+      document.querySelectorAll('.answer-btn')[index].classList.add('selected');
+      
+      selectedAnswer = value;
+      document.getElementById('next-btn').classList.add('active');
+    }
+
+    function nextQuestion() {
+      if (!selectedAnswer) return;
+
+      answers.push(selectedAnswer);
+
+      if (currentQuestion < questions.length - 1) {
+        currentQuestion++;
+        showQuestion();
       } else {
-        // Otherwise, hide any other section and show about
-        hideAllSections();
-        aboutSection.classList.add('show');
-        aboutLink.classList.add('active');
-        aboutLink.textContent = 'about';
+        showProducts();
       }
-    });
-    contactLink.addEventListener('click', () => {
-      if (contactSection.classList.contains('show')) {
-        // If already visible, hide it
-        hideAllSections();
-      } else {
-        // Otherwise, hide any other section and show contact
-        hideAllSections();
-        contactSection.classList.add('show');
-        contactLink.classList.add('active');
-        contactLink.textContent = 'contact';
-      }
-    });
-    // When switching between News/Pulp, hide sections
-    function showItemsSection() {
-      hideAllSections();
-      // Ensures link texts are reset (redundant, but explicit as per instructions)
-      aboutLink.textContent = 'about';
-      contactLink.textContent = 'contact';
-      render();
+    }
+
+    function showProducts() {
+      // Simple logic to determine product category based on answers
+      const categoryPriority = answers.reduce((acc, answer) => {
+        acc[answer] = (acc[answer] || 0) + 1;
+        return acc;
+      }, {});
+
+      const topCategory = Object.keys(categoryPriority).reduce((a, b) => 
+        categoryPriority[a] > categoryPriority[b] ? a : b
+      );
+
+      const category = productCategories[topCategory] || productCategories.minimal;
+
+      document.getElementById('quiz-screen').style.display = 'none';
+      document.getElementById('product-screen').style.display = 'block';
+
+      document.getElementById('product-category-title').textContent = category.title;
+      document.getElementById('product-category-subtitle').textContent = category.subtitle;
+
+      const productsGrid = document.getElementById('products-grid');
+      productsGrid.innerHTML = '';
+
+      category.products.forEach(product => {
+        const productCard = document.createElement('div');
+        productCard.className = 'product-card';
+        productCard.innerHTML = `
+          <div class="product-image">${product.image}</div>
+          <div class="product-info">
+            <div class="product-name">${product.name}</div>
+            <div class="product-price">${product.price}</div>
+          </div>
+        `;
+        productsGrid.appendChild(productCard);
+      });
+    }
+
+    function restartQuiz() {
+      currentQuestion = 0;
+      answers = [];
+      selectedAnswer = null;
+      
+      document.getElementById('product-screen').style.display = 'none';
+      document.getElementById('welcome-screen').style.display = 'flex';
     }
   </script>
 </body>
