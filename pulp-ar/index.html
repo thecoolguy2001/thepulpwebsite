@@ -9,7 +9,7 @@
   <script defer src="https://cdn.jsdelivr.net/npm/three@0.131.3/build/three.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/three@0.131.3/examples/js/loaders/GLTFLoader.js"></script>
 
-  <script defer src="https://cdn.jsdelivr.net/gh/hiukim/mind-ar-js@1.2.5/dist/mindar-image-three.prod.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-three.prod.js"></script>
 
   <style>
     html, body { margin:0; padding:0; height:100%; overflow:hidden; background:#000; }
@@ -59,10 +59,11 @@
       });
 
       const ensureMindAR = async () => {
-        // If mindar already present, done
-        if (window.MINDAR && window.MINDAR.IMAGE) return;
-        // Try loading the official CDN path explicitly
-        await loadScript('https://cdn.jsdelivr.net/gh/hiukim/mind-ar-js@1.2.5/dist/mindar-image-three.prod.js');
+        let retries = 0;
+        while (!(window.MINDAR && window.MINDAR.IMAGE) && retries < 50) {
+          await new Promise((r) => setTimeout(r, 100));
+          retries++;
+        }
         if (!(window.MINDAR && window.MINDAR.IMAGE)) {
           throw new Error('MindAR script failed to load (window.MINDAR.IMAGE not found)');
         }
