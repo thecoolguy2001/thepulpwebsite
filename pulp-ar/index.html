@@ -95,8 +95,34 @@
         }, undefined, (err) => reject(err));
       });
 
+      const preflightCamera = async () => {
+        // Ensure mediaDevices.getUserMedia exists (polyfill for older iOS)
+        if (typeof navigator.mediaDevices === 'undefined') {
+          navigator.mediaDevices = {};
+        }
+        if (typeof navigator.mediaDevices.getUserMedia !== 'function') {
+          const getUserMedia = navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
+          if (!getUserMedia) {
+            throw new Error('getUserMedia is not supported on this browser.');
+          }
+          navigator.mediaDevices.getUserMedia = (constraints) => new Promise((resolve, reject) => {
+            getUserMedia.call(navigator, constraints, resolve, reject);
+          });
+        }
+
+        // Request camera access explicitly on user gesture
+        const constraints = { video: { facingMode: { ideal: 'environment' } }, audio: false };
+        const stream = await navigator.mediaDevices.getUserMedia(constraints);
+
+        // Immediately release the camera so MindAR can take over
+        if (stream && stream.getTracks) {
+          stream.getTracks().forEach((t) => t.stop());
+        }
+      };
+
       const startAR = async () => {
         try {
+          await preflightCamera();
           // Boot MindAR only after a user gesture
           mindarThree = new window.MINDAR.IMAGE.MindARThree({
             container,
@@ -130,7 +156,13 @@
         } catch (e) {
           console.error(e);
           // Common causes: camera blocked, no https, another app using camera
-          showError('Could not access camera. Check site permissions (Settings > Camera), ensure HTTPS, and close other camera apps.');
+          let hint = 'Could not access camera. Ensure HTTPS, allow camera permissions, and close other camera apps.';
+          if (e && (e.name === 'NotAllowedError' || e.name === 'SecurityError')) {
+            hint = 'Camera access was blocked. On iOS: Settings → Safari → Camera → Allow.\nIn Safari (aA) → Website Settings → Camera → Allow. Then reload and tap Start AR again.';
+          } else if (e && e.name === 'NotFoundError') {
+            hint = 'No camera found. If you have multiple cameras, try disabling Continuity Camera and retry.';
+          }
+          showError(hint);
         }
       };
 
