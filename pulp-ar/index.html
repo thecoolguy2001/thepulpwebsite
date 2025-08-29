@@ -8,7 +8,6 @@
   <!-- Three + MindAR (image tracking build) -->
   <script src="https://cdn.jsdelivr.net/npm/three@0.131.3/build/three.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/three@0.131.3/examples/js/loaders/GLTFLoader.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/three@0.131.3/examples/jsm/utils/BufferGeometryUtils.js"></script>
 
   <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.1.7/dist/mindar-image-three.prod.js"></script>
 
@@ -24,113 +23,124 @@
 </head>
 <body>
   <div id="container"></div>
+  <div id="start-overlay" style="position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.92);z-index:10;">
+    <div style="text-align:center;color:#fff;font:16px/1.4 -apple-system,system-ui,sans-serif;padding:24px;max-width:320px;">
+      <div style="margin-bottom:12px;font-weight:600;">Enable Camera to start AR</div>
+      <div style="opacity:.8;margin-bottom:16px;">Tap the button below to grant camera access.</div>
+      <button id="start-ar" style="appearance:none;border:0;border-radius:12px;padding:12px 16px;font-weight:600;">Start AR</button>
+      <div id="error-msg" style="margin-top:12px;color:#ffb3b3;display:none;"></div>
+    </div>
+  </div>
   <div class="hint">Point camera at your Pulp cover</div>
 
   <script>
     (async () => {
-      // 1) Boot MindAR
-      const mindarThree = new window.MINDAR.IMAGE.MindARThree({
-        container: document.querySelector("#container"),
-        imageTargetSrc: "/pulp-ar/assets/pulp-marker.mind",   // your compiled marker
-        filterMinCF: 0.0001, filterBeta: 0.01          // stable but snappy
-      });
+      const container = document.querySelector("#container");
+      const overlay = document.querySelector('#start-overlay');
+      const startBtn = document.querySelector('#start-ar');
+      const errorMsg = document.querySelector('#error-msg');
 
-      const {renderer, scene, camera} = mindarThree;
-
-      // 2) Lighting (soft + a directional for fake “phone screen” bounce)
-      const hemi = new THREE.HemisphereLight(0xffffff, 0x444466, 1.0);
-      scene.add(hemi);
-      const dir = new THREE.DirectionalLight(0xffffff, 0.8);
-      dir.position.set(0.5, 1.0, 0.5);
-      scene.add(dir);
-
-      // 3) One anchor = the image marker’s plane (XY). +Y is "out" of the marker.
-      //    Units are meters; MindAR’s marker plane is 1.0 wide by default.
-      const anchor = mindarThree.addAnchor(0);
-
-      // (Optional) invisible plane for grounding shadows (nice realism)
-      const makeShadowPlane = () => {
-        const planeGeo = new THREE.PlaneBufferGeometry(1, 1);
-        const planeMat = new THREE.ShadowMaterial({ opacity: 0.35 });
-        const plane = new THREE.Mesh(planeGeo, planeMat);
-        plane.rotateX(-Math.PI/2); // make it horizontal if you prefer world-up;
-        // BUT MindAR anchor plane is already XY; we’ll keep plane invisible by default:
-        plane.visible = false;
-        return plane;
+      // Helper to show errors to user
+      const showError = (msg) => {
+        if (errorMsg) {
+          errorMsg.textContent = msg;
+          errorMsg.style.display = 'block';
+        }
+        console.error(msg);
       };
 
-      // 4) Load models
+      // Secure context check (camera requires https or localhost)
+      if (!window.isSecureContext) {
+        showError('This page must be served over HTTPS (or localhost) for camera access.');
+      }
+
+      let mindarThree, renderer, scene, camera, anchor;
+      let stack, single;
+
+      // Pre-create loaders & lights so they exist before start
       const loader = new THREE.GLTFLoader();
 
-      // Model A: stack (lies flush on the marker)
-      let stack;
-      const loadStack = () =>
-        new Promise((resolve) => {
-          loader.load("/pulp-ar/assets/stack.glb", (gltf) => {
-            stack = gltf.scene;
+      const setupScene = () => {
+        const hemi = new THREE.HemisphereLight(0xffffff, 0x444466, 1.0);
+        scene.add(hemi);
+        const dir = new THREE.DirectionalLight(0xffffff, 0.8);
+        dir.position.set(0.5, 1.0, 0.5);
+        scene.add(dir);
+      };
 
-            // ---- SCALE / ORIENTATION ----
-            // Fit it to marker: start small, adjust live later.
-            stack.scale.set(0.18, 0.18, 0.18);
+      const makeAnchor = () => {
+        anchor = mindarThree.addAnchor(0);
+        anchor.onTargetFound = () => { if (stack) stack.visible = true; if (single) single.visible = true; };
+        anchor.onTargetLost  = () => { if (stack) stack.visible = false; if (single) single.visible = false; };
+      };
 
-            // Lay it FLAT ON the marker plane:
-            // MindAR's anchor plane faces +Z toward camera; Z is depth.
-            // We'll keep rotation as-is; if your model is upright, tip it:
-            // stack.rotation.x = -Math.PI/2;
-
-            // Put bottom exactly on marker surface:
-            // Move slightly above to avoid z-fighting with the plane
-            stack.position.set(0, 0, 0.002);
-
-            anchor.group.add(stack);
-            resolve();
-          });
-        });
-
-      // Model B: single magazine (floats above and spins)
-      let single;
-      const loadSingle = () =>
-        new Promise((resolve) => {
-          loader.load("/pulp-ar/assets/single.glb", (gltf) => {
-            single = gltf.scene;
-            single.scale.set(0.16, 0.16, 0.16);
-
-            // Float above the stack (Z is "out of" marker plane toward camera)
-            single.position.set(0, 0, 0.08); // 8cm above
-
-            // Give it a slight tilt for style
-            single.rotation.set(THREE.Math.degToRad(-10), 0, THREE.Math.degToRad(8));
-
-            anchor.group.add(single);
-            resolve();
-          });
-        });
-
-      // (Optional) shadow catcher (turn visible if you add real shadows later)
-      // anchor.group.add(makeShadowPlane());
-
-      // 5) Show / hide when marker is found/lost (keeps it crisp)
-      anchor.onTargetFound = () => { if (stack) stack.visible = true; if (single) single.visible = true; };
-      anchor.onTargetLost  = () => { if (stack) stack.visible = false; if (single) single.visible = false; };
-
-      await mindarThree.start();
-
-      // Load models *after* camera starts so permissions are asked first
-      await loadStack();
-      await loadSingle();
-
-      // 6) Animation loop — spin the floating magazine
-      const clock = new THREE.Clock();
-      renderer.setAnimationLoop(() => {
-        const t = clock.getElapsedTime();
-
-        if (single) {
-          single.rotation.z += 0.02;           // spin
-          single.position.z = 0.08 + 0.005*Math.sin(t*2.0); // tiny float bob
-        }
-
-        renderer.render(scene, camera);
+      const loadStack = () => new Promise((resolve, reject) => {
+        loader.load("/pulp-ar/assets/test_stack.glb", (gltf) => {
+          stack = gltf.scene;
+          stack.scale.set(0.18, 0.18, 0.18);
+          stack.position.set(0, 0, 0.002); // offset to avoid z-fighting
+          anchor.group.add(stack);
+          resolve();
+        }, undefined, (err) => reject(err));
       });
+
+      const loadSingle = () => new Promise((resolve, reject) => {
+        loader.load("/pulp-ar/assets/test_single.glb", (gltf) => {
+          single = gltf.scene;
+          single.scale.set(0.16, 0.16, 0.16);
+          single.position.set(0, 0, 0.08);
+          single.rotation.set(THREE.Math.degToRad(-10), 0, THREE.Math.degToRad(8));
+          anchor.group.add(single);
+          resolve();
+        }, undefined, (err) => reject(err));
+      });
+
+      const startAR = async () => {
+        try {
+          // Boot MindAR only after a user gesture
+          mindarThree = new window.MINDAR.IMAGE.MindARThree({
+            container,
+            imageTargetSrc: "/pulp-ar/assets/pulp-marker.mind",
+            filterMinCF: 0.0001,
+            filterBeta: 0.01
+          });
+          ({ renderer, scene, camera } = mindarThree);
+
+          setupScene();
+          makeAnchor();
+
+          await mindarThree.start();
+
+          // Load models after camera permission granted
+          await loadStack();
+          await loadSingle();
+
+          const clock = new THREE.Clock();
+          renderer.setAnimationLoop(() => {
+            const t = clock.getElapsedTime();
+            if (single) {
+              single.rotation.z += 0.02;
+              single.position.z = 0.08 + 0.005 * Math.sin(t * 2.0);
+            }
+            renderer.render(scene, camera);
+          });
+
+          // Hide overlay once running
+          if (overlay) overlay.style.display = 'none';
+        } catch (e) {
+          console.error(e);
+          // Common causes: camera blocked, no https, another app using camera
+          showError('Could not access camera. Check site permissions (Settings > Camera), ensure HTTPS, and close other camera apps.');
+        }
+      };
+
+      // Some browsers (esp. iOS Safari) require a user gesture to start camera
+      if (startBtn) {
+        startBtn.addEventListener('click', startAR, { once: true });
+      } else {
+        // Fallback: try to auto-start if button missing
+        startAR();
+      }
     })();
   </script>
 </body>
