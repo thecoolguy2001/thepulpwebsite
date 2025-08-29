@@ -120,13 +120,47 @@
         }
       };
 
+      const verifyMindFile = async (path) => {
+        try {
+          const res = await fetch(path, { method: 'HEAD', cache: 'no-store' });
+          if (!res.ok) throw new Error(`.mind fetch failed with status ${res.status}`);
+        } catch (err) {
+          throw new Error(`Mind file not reachable at ${path}: ${err.message}`);
+        }
+      };
+
       const startAR = async () => {
+        // Hide any old error
+        if (errorMsg) { errorMsg.textContent = ''; errorMsg.style.display = 'none'; }
+
+        // 1) Permission preflight
         try {
           await preflightCamera();
-          // Boot MindAR only after a user gesture
+        } catch (e) {
+          console.error('Preflight camera error:', e);
+          let hint = 'Camera permission was not granted.';
+          if (e && (e.name === 'NotAllowedError' || e.name === 'SecurityError')) {
+            hint = 'Camera access was blocked. On iOS: Settings → Safari → Camera → Allow. In Safari (aA) → Website Settings → Camera → Allow. Then reload and tap Start AR again.';
+          }
+          showError(hint);
+          return;
+        }
+
+        // 2) Verify marker file exists (avoid mislabeling as camera issue)
+        const mindPath = '/pulp-ar/assets/pulp-marker.mind';
+        try {
+          await verifyMindFile(mindPath);
+        } catch (e) {
+          console.error('Mind file check failed:', e);
+          showError(`Marker file not found: ${mindPath}. Make sure it is deployed at that path.`);
+          return;
+        }
+
+        // 3) Boot MindAR
+        try {
           mindarThree = new window.MINDAR.IMAGE.MindARThree({
             container,
-            imageTargetSrc: "/pulp-ar/assets/pulp-marker.mind",
+            imageTargetSrc: mindPath,
             filterMinCF: 0.0001,
             filterBeta: 0.01
           });
@@ -136,34 +170,36 @@
           makeAnchor();
 
           await mindarThree.start();
+        } catch (e) {
+          console.error('MindAR start error:', e);
+          let hint = 'MindAR could not start the camera.';
+          if (e && e.message) hint += `\n${e.message}`;
+          showError(hint);
+          return;
+        }
 
-          // Load models after camera permission granted
+        // 4) Load models
+        try {
           await loadStack();
           await loadSingle();
-
-          const clock = new THREE.Clock();
-          renderer.setAnimationLoop(() => {
-            const t = clock.getElapsedTime();
-            if (single) {
-              single.rotation.z += 0.02;
-              single.position.z = 0.08 + 0.005 * Math.sin(t * 2.0);
-            }
-            renderer.render(scene, camera);
-          });
-
-          // Hide overlay once running
-          if (overlay) overlay.style.display = 'none';
         } catch (e) {
-          console.error(e);
-          // Common causes: camera blocked, no https, another app using camera
-          let hint = 'Could not access camera. Ensure HTTPS, allow camera permissions, and close other camera apps.';
-          if (e && (e.name === 'NotAllowedError' || e.name === 'SecurityError')) {
-            hint = 'Camera access was blocked. On iOS: Settings → Safari → Camera → Allow.\nIn Safari (aA) → Website Settings → Camera → Allow. Then reload and tap Start AR again.';
-          } else if (e && e.name === 'NotFoundError') {
-            hint = 'No camera found. If you have multiple cameras, try disabling Continuity Camera and retry.';
-          }
-          showError(hint);
+          console.error('Model load error:', e);
+          showError('Models failed to load. Check the GLB paths under /pulp-ar/assets/.');
+          return;
         }
+
+        // 5) Start render loop
+        const clock = new THREE.Clock();
+        renderer.setAnimationLoop(() => {
+          const t = clock.getElapsedTime();
+          if (single) {
+            single.rotation.z += 0.02;
+            single.position.z = 0.08 + 0.005 * Math.sin(t * 2.0);
+          }
+          renderer.render(scene, camera);
+        });
+
+        if (overlay) overlay.style.display = 'none';
       };
 
       // Some browsers (esp. iOS Safari) require a user gesture to start camera
