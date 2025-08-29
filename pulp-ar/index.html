@@ -35,6 +35,20 @@
 
   <script>
     (async () => {
+      // Wait until DOM is ready
+      if (document.readyState !== 'complete' && document.readyState !== 'interactive') {
+        await new Promise((r) => document.addEventListener('DOMContentLoaded', r, { once: true }));
+      }
+      // Ensure deferred library scripts have executed
+      await new Promise((r) => window.requestAnimationFrame(r));
+
+      window.addEventListener('error', (e) => {
+        if (errorMsg) {
+          errorMsg.textContent = 'Runtime error: ' + (e && e.message ? e.message : 'Unknown');
+          errorMsg.style.display = 'block';
+        }
+      });
+
       const loadScript = (src) => new Promise((resolve, reject) => {
         const s = document.createElement('script');
         s.src = src;
@@ -76,8 +90,16 @@
       let mindarThree, renderer, scene, camera, anchor;
       let stack, single;
 
-      // Pre-create loaders & lights so they exist before start
-      const loader = new THREE.GLTFLoader();
+      let loader;
+      const getLoader = () => {
+        if (!loader) {
+          if (!window.THREE || !THREE.GLTFLoader) {
+            throw new Error('THREE.GLTFLoader not available yet');
+          }
+          loader = new THREE.GLTFLoader();
+        }
+        return loader;
+      };
 
       const setupScene = () => {
         const hemi = new THREE.HemisphereLight(0xffffff, 0x444466, 1.0);
@@ -94,7 +116,7 @@
       };
 
       const loadStack = () => new Promise((resolve, reject) => {
-        loader.load("/pulp-ar/assets/test_stack.glb", (gltf) => {
+        getLoader().load("/pulp-ar/assets/test_stack.glb", (gltf) => {
           stack = gltf.scene;
           stack.scale.set(0.18, 0.18, 0.18);
           stack.position.set(0, 0, 0.002); // offset to avoid z-fighting
@@ -104,7 +126,7 @@
       });
 
       const loadSingle = () => new Promise((resolve, reject) => {
-        loader.load("/pulp-ar/assets/test_single.glb", (gltf) => {
+        getLoader().load("/pulp-ar/assets/test_single.glb", (gltf) => {
           single = gltf.scene;
           single.scale.set(0.16, 0.16, 0.16);
           single.position.set(0, 0, 0.08);
@@ -178,6 +200,14 @@
         // Ensure MindAR script is loaded and ready
         await ensureMindAR();
 
+        // Ensure THREE has loaded (from deferred script)
+        if (!window.THREE) {
+          await new Promise((r) => setTimeout(r, 0));
+        }
+        if (!window.THREE) {
+          throw new Error('THREE not loaded. Check script order or network.');
+        }
+
         // 3) Boot MindAR
         try {
           mindarThree = new window.MINDAR.IMAGE.MindARThree({
@@ -226,7 +256,10 @@
 
       // Some browsers (esp. iOS Safari) require a user gesture to start camera
       if (startBtn) {
-        startBtn.addEventListener('click', startAR, { once: true });
+        startBtn.addEventListener('click', () => {
+          console.log('[PULP-AR] Start button clicked');
+          startAR();
+        }, { once: true });
       } else {
         // Fallback: try to auto-start if button missing
         startAR();
