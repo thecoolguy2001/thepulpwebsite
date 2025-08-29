@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
+  <title>Pulp AR</title>
+
+  <!-- Three + MindAR (image tracking build) -->
+  <script src="https://cdn.jsdelivr.net/npm/three@0.131.3/build/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.131.3/examples/js/loaders/GLTFLoader.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.131.3/examples/jsm/utils/BufferGeometryUtils.js"></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.1.7/dist/mindar-image-three.prod.js"></script>
+
+  <style>
+    html, body { margin:0; padding:0; height:100%; overflow:hidden; background:#000; }
+    #container { width:100%; height:100%; }
+    .hint {
+      position: fixed; left: 50%; transform: translateX(-50%);
+      bottom: 12px; color: #fff; font: 14px/1.2 system-ui, -apple-system, sans-serif;
+      background: rgba(0,0,0,.45); padding: 8px 10px; border-radius: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div id="container"></div>
+  <div class="hint">Point camera at your Pulp cover</div>
+
+  <script>
+    (async () => {
+      // 1) Boot MindAR
+      const mindarThree = new window.MINDAR.IMAGE.MindARThree({
+        container: document.querySelector("#container"),
+        imageTargetSrc: "/pulp-ar/assets/pulp-marker.mind",   // your compiled marker
+        filterMinCF: 0.0001, filterBeta: 0.01          // stable but snappy
+      });
+
+      const {renderer, scene, camera} = mindarThree;
+
+      // 2) Lighting (soft + a directional for fake “phone screen” bounce)
+      const hemi = new THREE.HemisphereLight(0xffffff, 0x444466, 1.0);
+      scene.add(hemi);
+      const dir = new THREE.DirectionalLight(0xffffff, 0.8);
+      dir.position.set(0.5, 1.0, 0.5);
+      scene.add(dir);
+
+      // 3) One anchor = the image marker’s plane (XY). +Y is "out" of the marker.
+      //    Units are meters; MindAR’s marker plane is 1.0 wide by default.
+      const anchor = mindarThree.addAnchor(0);
+
+      // (Optional) invisible plane for grounding shadows (nice realism)
+      const makeShadowPlane = () => {
+        const planeGeo = new THREE.PlaneBufferGeometry(1, 1);
+        const planeMat = new THREE.ShadowMaterial({ opacity: 0.35 });
+        const plane = new THREE.Mesh(planeGeo, planeMat);
+        plane.rotateX(-Math.PI/2); // make it horizontal if you prefer world-up;
+        // BUT MindAR anchor plane is already XY; we’ll keep plane invisible by default:
+        plane.visible = false;
+        return plane;
+      };
+
+      // 4) Load models
+      const loader = new THREE.GLTFLoader();
+
+      // Model A: stack (lies flush on the marker)
+      let stack;
+      const loadStack = () =>
+        new Promise((resolve) => {
+          loader.load("/pulp-ar/assets/stack.glb", (gltf) => {
+            stack = gltf.scene;
+
+            // ---- SCALE / ORIENTATION ----
+            // Fit it to marker: start small, adjust live later.
+            stack.scale.set(0.18, 0.18, 0.18);
+
+            // Lay it FLAT ON the marker plane:
+            // MindAR's anchor plane faces +Z toward camera; Z is depth.
+            // We'll keep rotation as-is; if your model is upright, tip it:
+            // stack.rotation.x = -Math.PI/2;
+
+            // Put bottom exactly on marker surface:
+            // Move slightly above to avoid z-fighting with the plane
+            stack.position.set(0, 0, 0.002);
+
+            anchor.group.add(stack);
+            resolve();
+          });
+        });
+
+      // Model B: single magazine (floats above and spins)
+      let single;
+      const loadSingle = () =>
+        new Promise((resolve) => {
+          loader.load("/pulp-ar/assets/single.glb", (gltf) => {
+            single = gltf.scene;
+            single.scale.set(0.16, 0.16, 0.16);
+
+            // Float above the stack (Z is "out of" marker plane toward camera)
+            single.position.set(0, 0, 0.08); // 8cm above
+
+            // Give it a slight tilt for style
+            single.rotation.set(THREE.Math.degToRad(-10), 0, THREE.Math.degToRad(8));
+
+            anchor.group.add(single);
+            resolve();
+          });
+        });
+
+      // (Optional) shadow catcher (turn visible if you add real shadows later)
+      // anchor.group.add(makeShadowPlane());
+
+      // 5) Show / hide when marker is found/lost (keeps it crisp)
+      anchor.onTargetFound = () => { if (stack) stack.visible = true; if (single) single.visible = true; };
+      anchor.onTargetLost  = () => { if (stack) stack.visible = false; if (single) single.visible = false; };
+
+      await mindarThree.start();
+
+      // Load models *after* camera starts so permissions are asked first
+      await loadStack();
+      await loadSingle();
+
+      // 6) Animation loop — spin the floating magazine
+      const clock = new THREE.Clock();
+      renderer.setAnimationLoop(() => {
+        const t = clock.getElapsedTime();
+
+        if (single) {
+          single.rotation.z += 0.02;           // spin
+          single.position.z = 0.08 + 0.005*Math.sin(t*2.0); // tiny float bob
+        }
+
+        renderer.render(scene, camera);
+      });
+    })();
+  </script>
+</body>
+</html>
