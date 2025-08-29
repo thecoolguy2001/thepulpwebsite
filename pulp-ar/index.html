@@ -174,7 +174,17 @@
         // Hide any old error
         if (errorMsg) { errorMsg.textContent = ''; errorMsg.style.display = 'none'; }
 
-        // Skip preflight on iOS - let MindAR handle camera directly
+        // 1) Permission preflight
+        try {
+          await preflightCamera();
+        } catch (e) {
+          let hint = 'Camera permission was not granted.';
+          if (e && (e.name === 'NotAllowedError' || e.name === 'SecurityError')) {
+            hint = 'Camera access was blocked. On iOS: Settings → Safari → Camera → Allow. In Safari (aA) → Website Settings → Camera → Allow. Then reload and tap Start AR again.';
+          }
+          showError(hint);
+          return;
+        }
 
         // 2) Verify marker file exists (avoid mislabeling as camera issue)
         const mindPath = '/pulp-ar/assets/pulp-marker.mind';
@@ -258,9 +268,14 @@
 
       // Some browsers (esp. iOS Safari) require a user gesture to start camera
       if (startBtn) {
-        startBtn.addEventListener('click', () => {
-          console.log('[PULP-AR] Start button clicked');
-          startAR();
+        startBtn.addEventListener('click', async () => {
+          startBtn.textContent = 'Starting...';
+          try {
+            await startAR();
+          } catch (e) {
+            showError('Failed to start AR: ' + (e.message || e));
+            startBtn.textContent = 'Start AR';
+          }
         }, { once: true });
       } else {
         // Fallback: try to auto-start if button missing
