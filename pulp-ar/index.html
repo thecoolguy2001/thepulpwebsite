@@ -174,18 +174,7 @@
         // Hide any old error
         if (errorMsg) { errorMsg.textContent = ''; errorMsg.style.display = 'none'; }
 
-        // 1) Permission preflight
-        try {
-          await preflightCamera();
-        } catch (e) {
-          console.error('Preflight camera error:', e);
-          let hint = 'Camera permission was not granted.';
-          if (e && (e.name === 'NotAllowedError' || e.name === 'SecurityError')) {
-            hint = 'Camera access was blocked. On iOS: Settings → Safari → Camera → Allow. In Safari (aA) → Website Settings → Camera → Allow. Then reload and tap Start AR again.';
-          }
-          showError(hint);
-          return;
-        }
+        // Skip preflight on iOS - let MindAR handle camera directly
 
         // 2) Verify marker file exists (avoid mislabeling as camera issue)
         const mindPath = '/pulp-ar/assets/pulp-marker.mind';
@@ -201,11 +190,18 @@
         await ensureMindAR();
 
         // Ensure THREE has loaded (from deferred script)
-        if (!window.THREE) {
-          await new Promise((r) => setTimeout(r, 0));
+        let retries = 0;
+        while (!window.THREE && retries < 50) {
+          await new Promise((r) => setTimeout(r, 100));
+          retries++;
         }
         if (!window.THREE) {
           throw new Error('THREE not loaded. Check script order or network.');
+        }
+        
+        // Ensure GLTFLoader is available
+        if (!window.THREE.GLTFLoader) {
+          throw new Error('THREE.GLTFLoader not available');
         }
 
         // 3) Boot MindAR
@@ -225,7 +221,13 @@
         } catch (e) {
           console.error('MindAR start error:', e);
           let hint = 'MindAR could not start the camera.';
-          if (e && e.message) hint += `\n${e.message}`;
+          if (e && e.message) {
+            hint += `\n${e.message}`;
+            // iOS-specific guidance
+            if (/ios|iphone|ipad/i.test(navigator.userAgent)) {
+              hint += '\n\nFor iOS: Ensure you granted camera permission and reload the page if needed.';
+            }
+          }
           showError(hint);
           return;
         }
