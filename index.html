@@ -19,6 +19,46 @@
       overflow-x: hidden;
     }
 
+    /* Corner Navigation */
+    .corner-nav {
+      position: fixed;
+      font-family: 'Courier Prime', monospace;
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      z-index: 1001;
+      font-weight: 700;
+    }
+
+    .corner-nav.top-right {
+      top: 2rem;
+      right: 2rem;
+      font-size: 1rem;
+    }
+
+    .corner-nav.bottom-left {
+      bottom: 2rem;
+      left: 2rem;
+    }
+
+    .corner-nav.bottom-right {
+      bottom: 2rem;
+      right: 2rem;
+    }
+
+    .corner-nav a {
+      color: #000;
+      text-decoration: none;
+      border-bottom: 2px solid #000;
+      padding-bottom: 2px;
+      transition: all 0.3s ease;
+    }
+
+    .corner-nav a:hover {
+      color: #ff0000;
+      border-bottom-color: #ff0000;
+    }
+
     /* Main Container */
     .container {
       min-height: 100vh;
@@ -71,23 +111,6 @@
 
     .quiz-screen.visible {
       opacity: 1;
-    }
-
-    .quiz-progress {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 4px;
-      background: #f0f0f0;
-      z-index: 999;
-    }
-
-    .quiz-progress-bar {
-      height: 100%;
-      background: #ff0000;
-      width: 0%;
-      transition: width 0.3s ease;
     }
 
     .question-container {
@@ -177,6 +200,12 @@
       padding-top: 8rem;
       max-width: 1400px;
       margin: 0 auto;
+      opacity: 0;
+      transition: opacity 0.5s ease;
+    }
+
+    .product-screen.visible {
+      opacity: 1;
     }
 
     .product-hero {
@@ -270,10 +299,130 @@
       color: #666;
       transition: color 0.2s ease;
       z-index: 1000;
+      display: none;
     }
 
     .back-btn:hover {
       color: #ff0000;
+    }
+
+    /* Transition Overlay - Pulp Magazine Aesthetic */
+    .transition-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 9999;
+      display: none;
+    }
+
+    .transition-overlay.active {
+      display: block;
+      pointer-events: all;
+    }
+
+    /* Ink Splatter Transition */
+    .ink-transition {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: #000;
+      clip-path: circle(0% at 50% 50%);
+      animation: inkSplatter 1.2s cubic-bezier(0.65, 0, 0.35, 1);
+    }
+
+    @keyframes inkSplatter {
+      0% {
+        clip-path: circle(0% at 50% 50%);
+      }
+      50% {
+        clip-path: circle(75% at 50% 50%);
+      }
+      100% {
+        clip-path: circle(0% at 50% 50%);
+      }
+    }
+
+    /* Paper Wipe Transition */
+    .paper-wipe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, #000 0%, #1a1a1a 50%, #000 100%);
+      transform: translateX(-100%) skewX(-10deg);
+      animation: paperWipe 1s cubic-bezier(0.85, 0, 0.15, 1);
+      filter: contrast(1.1) brightness(0.95);
+    }
+
+    @keyframes paperWipe {
+      0% {
+        transform: translateX(-120%) skewX(-10deg);
+      }
+      50% {
+        transform: translateX(0%) skewX(-10deg);
+      }
+      100% {
+        transform: translateX(120%) skewX(-10deg);
+      }
+    }
+
+    /* Grain Overlay */
+    .grain-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='3' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.3'/%3E%3C/svg%3E");
+      opacity: 0;
+      animation: grainPulse 1.2s ease-in-out;
+      mix-blend-mode: multiply;
+    }
+
+    @keyframes grainPulse {
+      0%, 100% {
+        opacity: 0;
+      }
+      50% {
+        opacity: 0.4;
+      }
+    }
+
+    /* Halftone Transition */
+    .halftone-transition {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle, transparent 20%, black 20%, black 25%, transparent 25%),
+                  radial-gradient(circle, transparent 20%, black 20%, black 25%, transparent 25%);
+      background-color: #000;
+      background-size: 30px 30px;
+      background-position: 0 0, 15px 15px;
+      opacity: 0;
+      animation: halftoneReveal 1s ease-in-out;
+    }
+
+    @keyframes halftoneReveal {
+      0% {
+        opacity: 0;
+        transform: scale(1);
+      }
+      50% {
+        opacity: 1;
+        transform: scale(1.05);
+      }
+      100% {
+        opacity: 0;
+        transform: scale(1);
+      }
     }
 
     /* Responsive */
@@ -313,10 +462,46 @@
         grid-template-columns: 1fr;
         gap: 1rem;
       }
+
+      .corner-nav {
+        font-size: 0.8rem;
+      }
+
+      .corner-nav.top-right,
+      .corner-nav.bottom-left,
+      .corner-nav.bottom-right {
+        padding: 1rem;
+      }
+
+      .corner-nav.top-right {
+        top: 1rem;
+        right: 1rem;
+      }
+
+      .corner-nav.bottom-left {
+        bottom: 1rem;
+        left: 1rem;
+      }
+
+      .corner-nav.bottom-right {
+        bottom: 1rem;
+        right: 1rem;
+      }
     }
   </style>
 </head>
 <body>
+  <!-- Transition Overlay -->
+  <div class="transition-overlay" id="transition-overlay">
+    <div class="paper-wipe"></div>
+    <div class="grain-overlay"></div>
+  </div>
+
+  <!-- Corner Navigation -->
+  <div class="corner-nav top-right">VOL. 1</div>
+  <div class="corner-nav bottom-left"><a href="#submissions">Submissions</a></div>
+  <div class="corner-nav bottom-right"><a href="#support">Support</a></div>
+
   <div class="container">
     <!-- Welcome Screen -->
     <div class="welcome-screen" id="welcome-screen">
@@ -325,10 +510,6 @@
 
     <!-- Quiz Screen -->
     <div class="quiz-screen" id="quiz-screen">
-      <div class="quiz-progress">
-        <div class="quiz-progress-bar" id="progress-bar"></div>
-      </div>
-
       <div class="question-container">
         <div class="question-number" id="question-number">Question 1 of 4</div>
         <h2 class="question-title" id="question-title"></h2>
@@ -339,7 +520,7 @@
 
     <!-- Product Screen -->
     <div class="product-screen" id="product-screen">
-      <button class="back-btn" onclick="restartQuiz()">← Restart</button>
+      <button class="back-btn" id="back-btn" onclick="restartQuiz()">← Restart</button>
 
       <div class="product-hero">
         <h1 class="product-title" id="product-category-title">Your Perfect Match</h1>
@@ -453,15 +634,47 @@
       }
     };
 
+    // State management
     let currentQuestion = 0;
     let answers = [];
     let selectedAnswer = null;
     let logoAnimated = false;
 
-    // Mouse proximity detection
+    // DOM Elements
     const logo = document.getElementById('logo');
-    const detectRadius = 300; // Large radius for detection
+    const welcomeScreen = document.getElementById('welcome-screen');
+    const quizScreen = document.getElementById('quiz-screen');
+    const productScreen = document.getElementById('product-screen');
+    const transitionOverlay = document.getElementById('transition-overlay');
+    const backBtn = document.getElementById('back-btn');
 
+    // Configuration
+    const DETECT_RADIUS = 300;
+    const LOGO_ANIMATION_DURATION = 800;
+    const TRANSITION_DURATION = 1200;
+
+    /**
+     * High-quality transition system with pulp magazine aesthetic
+     * Uses hardware-accelerated animations for smooth performance
+     */
+    function playTransition(callback) {
+      transitionOverlay.classList.add('active');
+
+      // Execute callback at transition midpoint for seamless screen swap
+      setTimeout(() => {
+        if (callback) callback();
+      }, TRANSITION_DURATION / 2);
+
+      // Remove transition overlay after animation completes
+      setTimeout(() => {
+        transitionOverlay.classList.remove('active');
+      }, TRANSITION_DURATION);
+    }
+
+    /**
+     * Mouse proximity detection for logo interaction
+     * Uses Euclidean distance calculation for precise detection
+     */
     document.addEventListener('mousemove', (e) => {
       if (logoAnimated) return;
 
@@ -474,11 +687,15 @@
         Math.pow(e.clientY - logoCenterY, 2)
       );
 
-      if (distance < detectRadius) {
+      if (distance < DETECT_RADIUS) {
         animateLogoAndStartQuiz();
       }
     });
 
+    /**
+     * Handles logo animation and quiz initialization
+     * Uses CSS transforms for hardware acceleration
+     */
     function animateLogoAndStartQuiz() {
       if (logoAnimated) return;
       logoAnimated = true;
@@ -486,22 +703,27 @@
       // Animate logo to top left
       logo.classList.add('animated');
 
-      // After animation completes, show quiz
+      // After logo animation, transition to quiz
       setTimeout(() => {
-        document.getElementById('quiz-screen').style.display = 'flex';
-        setTimeout(() => {
-          document.getElementById('quiz-screen').classList.add('visible');
-        }, 50);
-        showQuestion();
-      }, 800);
+        playTransition(() => {
+          quizScreen.style.display = 'flex';
+          // Force reflow for animation
+          void quizScreen.offsetWidth;
+          quizScreen.classList.add('visible');
+          showQuestion();
+        });
+      }, LOGO_ANIMATION_DURATION);
     }
 
+    /**
+     * Renders current question with answers
+     * Efficiently updates DOM elements
+     */
     function showQuestion() {
       const question = questions[currentQuestion];
-      const progress = ((currentQuestion + 1) / questions.length) * 100;
 
-      document.getElementById('progress-bar').style.width = progress + '%';
-      document.getElementById('question-number').textContent = `Question ${currentQuestion + 1} of ${questions.length}`;
+      document.getElementById('question-number').textContent =
+        `Question ${currentQuestion + 1} of ${questions.length}`;
       document.getElementById('question-title').textContent = question.title;
 
       const answersGrid = document.getElementById('answers-grid');
@@ -519,95 +741,136 @@
       document.getElementById('next-btn').classList.remove('active');
     }
 
+    /**
+     * Handles answer selection with visual feedback
+     */
     function selectAnswer(index, value) {
-      document.querySelectorAll('.answer-btn').forEach(btn => btn.classList.remove('selected'));
-      document.querySelectorAll('.answer-btn')[index].classList.add('selected');
+      const buttons = document.querySelectorAll('.answer-btn');
+      buttons.forEach(btn => btn.classList.remove('selected'));
+      buttons[index].classList.add('selected');
 
       selectedAnswer = value;
       document.getElementById('next-btn').classList.add('active');
     }
 
+    /**
+     * Advances to next question or shows results
+     * Includes transition effects between questions
+     */
     function nextQuestion() {
       if (!selectedAnswer) return;
 
       answers.push(selectedAnswer);
 
       if (currentQuestion < questions.length - 1) {
-        currentQuestion++;
-        showQuestion();
+        playTransition(() => {
+          currentQuestion++;
+          showQuestion();
+        });
       } else {
-        showProducts();
+        playTransition(() => {
+          showProducts();
+        });
       }
     }
 
-    function showProducts() {
-      // Simple logic to determine product category based on answers
+    /**
+     * Calculates product category from user answers
+     * Uses frequency analysis for personalization
+     */
+    function calculateTopCategory() {
       const categoryPriority = answers.reduce((acc, answer) => {
         acc[answer] = (acc[answer] || 0) + 1;
         return acc;
       }, {});
 
-      const topCategory = Object.keys(categoryPriority).reduce((a, b) =>
+      return Object.keys(categoryPriority).reduce((a, b) =>
         categoryPriority[a] > categoryPriority[b] ? a : b
       );
+    }
 
+    /**
+     * Renders product recommendations and merch
+     * Creates DOM elements dynamically for better performance
+     */
+    function showProducts() {
+      const topCategory = calculateTopCategory();
       const category = productCategories[topCategory] || productCategories.minimal;
 
-      document.getElementById('quiz-screen').style.display = 'none';
-      document.getElementById('product-screen').style.display = 'block';
+      quizScreen.classList.remove('visible');
+      setTimeout(() => {
+        quizScreen.style.display = 'none';
+        productScreen.style.display = 'block';
+        backBtn.style.display = 'block';
+
+        // Force reflow
+        void productScreen.offsetWidth;
+        productScreen.classList.add('visible');
+      }, 500);
 
       document.getElementById('product-category-title').textContent = category.title;
       document.getElementById('product-category-subtitle').textContent = category.subtitle;
 
-      // Show products
-      const productsGrid = document.getElementById('products-grid');
-      productsGrid.innerHTML = '';
+      // Render magazine products
+      renderProductGrid('products-grid', category.products);
 
-      category.products.forEach(product => {
-        const productCard = document.createElement('div');
-        productCard.className = 'product-card';
-        productCard.innerHTML = `
-          <div class="product-image">${product.image}</div>
-          <div class="product-info">
-            <div class="product-name">${product.name}</div>
-            <div class="product-price">${product.price}</div>
-          </div>
-        `;
-        productsGrid.appendChild(productCard);
-      });
-
-      // Show merch
-      const merchGrid = document.getElementById('merch-grid');
-      merchGrid.innerHTML = '';
-
-      category.merch.forEach(product => {
-        const productCard = document.createElement('div');
-        productCard.className = 'product-card';
-        productCard.innerHTML = `
-          <div class="product-image">${product.image}</div>
-          <div class="product-info">
-            <div class="product-name">${product.name}</div>
-            <div class="product-price">${product.price}</div>
-          </div>
-        `;
-        merchGrid.appendChild(productCard);
-      });
+      // Render merch
+      renderProductGrid('merch-grid', category.merch);
     }
 
+    /**
+     * Efficient product grid rendering
+     * Reduces DOM manipulation by batch creation
+     */
+    function renderProductGrid(gridId, products) {
+      const grid = document.getElementById(gridId);
+      grid.innerHTML = '';
+
+      const fragment = document.createDocumentFragment();
+
+      products.forEach(product => {
+        const productCard = document.createElement('div');
+        productCard.className = 'product-card';
+        productCard.innerHTML = `
+          <div class="product-image">${product.image}</div>
+          <div class="product-info">
+            <div class="product-name">${product.name}</div>
+            <div class="product-price">${product.price}</div>
+          </div>
+        `;
+        fragment.appendChild(productCard);
+      });
+
+      grid.appendChild(fragment);
+    }
+
+    /**
+     * Resets application state and returns to welcome screen
+     * Includes smooth transition effects
+     */
     function restartQuiz() {
-      currentQuestion = 0;
-      answers = [];
-      selectedAnswer = null;
-      logoAnimated = false;
+      playTransition(() => {
+        // Reset state
+        currentQuestion = 0;
+        answers = [];
+        selectedAnswer = null;
+        logoAnimated = false;
 
-      document.getElementById('product-screen').style.display = 'none';
-      document.getElementById('quiz-screen').style.display = 'none';
-      document.getElementById('quiz-screen').classList.remove('visible');
-      document.getElementById('welcome-screen').style.display = 'flex';
-
-      // Reset logo
-      logo.classList.remove('animated');
+        // Reset UI
+        productScreen.classList.remove('visible');
+        setTimeout(() => {
+          productScreen.style.display = 'none';
+          backBtn.style.display = 'none';
+          welcomeScreen.style.display = 'flex';
+          logo.classList.remove('animated');
+        }, 500);
+      });
     }
+
+    // Initialize: Log app state for debugging
+    console.log('The Pulp - Interactive Experience Initialized');
+    console.log('Questions:', questions.length);
+    console.log('Categories:', Object.keys(productCategories).length);
   </script>
 </body>
 </html>
