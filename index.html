@@ -74,6 +74,11 @@
       text-align: center;
       padding: 2rem;
       position: relative;
+      z-index: 10;
+    }
+
+    .welcome-screen.hidden {
+      display: none !important;
     }
 
     .welcome-logo {
@@ -105,14 +110,13 @@
       padding: 2rem;
       padding-top: 8rem;
       text-align: center;
-      opacity: 0;
-      transition: opacity 0.5s ease;
       position: relative;
-      z-index: 50;
+      z-index: 100;
+      background: #fff;
     }
 
     .quiz-screen.visible {
-      opacity: 1;
+      display: flex !important;
     }
 
     .question-container {
@@ -202,14 +206,13 @@
       padding-top: 8rem;
       max-width: 1400px;
       margin: 0 auto;
-      opacity: 0;
-      transition: opacity 0.5s ease;
       position: relative;
-      z-index: 50;
+      z-index: 100;
+      background: #fff;
     }
 
     .product-screen.visible {
-      opacity: 1;
+      display: block !important;
     }
 
     .product-hero {
@@ -663,21 +666,19 @@
       // Animate logo to top left
       logo.classList.add('animated');
 
-      // After logo animation, transition to quiz
+      // After logo animation, show quiz immediately
       setTimeout(() => {
-        console.log('🔄 Logo animation complete, transitioning to quiz...');
+        console.log('🔄 Logo animation complete, showing quiz...');
+
+        // Hide welcome screen
+        welcomeScreen.classList.add('hidden');
+
+        // Show quiz screen with transition
         playTransition(() => {
           console.log('📺 Displaying quiz screen...');
-          quizScreen.style.display = 'flex';
-
-          // Force reflow for animation
-          void quizScreen.offsetWidth;
-
-          setTimeout(() => {
-            quizScreen.classList.add('visible');
-            console.log('✨ Quiz screen visible, showing first question...');
-            showQuestion();
-          }, 50);
+          quizScreen.classList.add('visible');
+          console.log('✨ Quiz screen should be visible NOW');
+          showQuestion();
         });
       }, LOGO_ANIMATION_DURATION);
     }
@@ -787,16 +788,12 @@
 
       console.log('🛍️ Showing products for category:', category.title);
 
+      // Hide quiz screen
       quizScreen.classList.remove('visible');
-      setTimeout(() => {
-        quizScreen.style.display = 'none';
-        productScreen.style.display = 'block';
-        backBtn.style.display = 'block';
 
-        // Force reflow
-        void productScreen.offsetWidth;
-        productScreen.classList.add('visible');
-      }, 500);
+      // Show product screen
+      productScreen.classList.add('visible');
+      backBtn.style.display = 'block';
 
       document.getElementById('product-category-title').textContent = category.title;
       document.getElementById('product-category-subtitle').textContent = category.subtitle;
@@ -852,13 +849,11 @@
 
         // Reset UI
         productScreen.classList.remove('visible');
-        setTimeout(() => {
-          productScreen.style.display = 'none';
-          backBtn.style.display = 'none';
-          welcomeScreen.style.display = 'flex';
-          logo.classList.remove('animated');
-          console.log('✅ Reset complete');
-        }, 500);
+        quizScreen.classList.remove('visible');
+        backBtn.style.display = 'none';
+        welcomeScreen.classList.remove('hidden');
+        logo.classList.remove('animated');
+        console.log('✅ Reset complete');
       });
     }
 
