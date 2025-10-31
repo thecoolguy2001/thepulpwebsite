@@ -107,6 +107,8 @@
       text-align: center;
       opacity: 0;
       transition: opacity 0.5s ease;
+      position: relative;
+      z-index: 50;
     }
 
     .quiz-screen.visible {
@@ -202,6 +204,8 @@
       margin: 0 auto;
       opacity: 0;
       transition: opacity 0.5s ease;
+      position: relative;
+      z-index: 50;
     }
 
     .product-screen.visible {
@@ -320,31 +324,6 @@
 
     .transition-overlay.active {
       display: block;
-      pointer-events: all;
-    }
-
-    /* Ink Splatter Transition */
-    .ink-transition {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: #000;
-      clip-path: circle(0% at 50% 50%);
-      animation: inkSplatter 1.2s cubic-bezier(0.65, 0, 0.35, 1);
-    }
-
-    @keyframes inkSplatter {
-      0% {
-        clip-path: circle(0% at 50% 50%);
-      }
-      50% {
-        clip-path: circle(75% at 50% 50%);
-      }
-      100% {
-        clip-path: circle(0% at 50% 50%);
-      }
     }
 
     /* Paper Wipe Transition */
@@ -383,6 +362,7 @@
       opacity: 0;
       animation: grainPulse 1.2s ease-in-out;
       mix-blend-mode: multiply;
+      pointer-events: none;
     }
 
     @keyframes grainPulse {
@@ -391,37 +371,6 @@
       }
       50% {
         opacity: 0.4;
-      }
-    }
-
-    /* Halftone Transition */
-    .halftone-transition {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: radial-gradient(circle, transparent 20%, black 20%, black 25%, transparent 25%),
-                  radial-gradient(circle, transparent 20%, black 20%, black 25%, transparent 25%);
-      background-color: #000;
-      background-size: 30px 30px;
-      background-position: 0 0, 15px 15px;
-      opacity: 0;
-      animation: halftoneReveal 1s ease-in-out;
-    }
-
-    @keyframes halftoneReveal {
-      0% {
-        opacity: 0;
-        transform: scale(1);
-      }
-      50% {
-        opacity: 1;
-        transform: scale(1.05);
-      }
-      100% {
-        opacity: 0;
-        transform: scale(1);
       }
     }
 
@@ -536,6 +485,7 @@
   </div>
 
   <script>
+    // Quiz Questions Data
     const questions = [
       {
         title: "What's your vibe?",
@@ -575,6 +525,7 @@
       }
     ];
 
+    // Product Categories Data
     const productCategories = {
       bold: {
         title: "Bold Collection",
@@ -640,33 +591,40 @@
     let selectedAnswer = null;
     let logoAnimated = false;
 
-    // DOM Elements
+    // DOM Elements - Cache for performance
     const logo = document.getElementById('logo');
     const welcomeScreen = document.getElementById('welcome-screen');
     const quizScreen = document.getElementById('quiz-screen');
     const productScreen = document.getElementById('product-screen');
     const transitionOverlay = document.getElementById('transition-overlay');
     const backBtn = document.getElementById('back-btn');
+    const questionNumber = document.getElementById('question-number');
+    const questionTitle = document.getElementById('question-title');
+    const answersGrid = document.getElementById('answers-grid');
+    const nextBtn = document.getElementById('next-btn');
 
     // Configuration
     const DETECT_RADIUS = 300;
     const LOGO_ANIMATION_DURATION = 800;
-    const TRANSITION_DURATION = 1200;
+    const TRANSITION_DURATION = 1000;
 
     /**
      * High-quality transition system with pulp magazine aesthetic
      * Uses hardware-accelerated animations for smooth performance
      */
     function playTransition(callback) {
+      console.log('🎬 Starting transition...');
       transitionOverlay.classList.add('active');
 
       // Execute callback at transition midpoint for seamless screen swap
       setTimeout(() => {
+        console.log('📝 Executing transition callback...');
         if (callback) callback();
       }, TRANSITION_DURATION / 2);
 
       // Remove transition overlay after animation completes
       setTimeout(() => {
+        console.log('✅ Transition complete');
         transitionOverlay.classList.remove('active');
       }, TRANSITION_DURATION);
     }
@@ -700,17 +658,26 @@
       if (logoAnimated) return;
       logoAnimated = true;
 
+      console.log('🎯 Logo triggered! Starting animation...');
+
       // Animate logo to top left
       logo.classList.add('animated');
 
       // After logo animation, transition to quiz
       setTimeout(() => {
+        console.log('🔄 Logo animation complete, transitioning to quiz...');
         playTransition(() => {
+          console.log('📺 Displaying quiz screen...');
           quizScreen.style.display = 'flex';
+
           // Force reflow for animation
           void quizScreen.offsetWidth;
-          quizScreen.classList.add('visible');
-          showQuestion();
+
+          setTimeout(() => {
+            quizScreen.classList.add('visible');
+            console.log('✨ Quiz screen visible, showing first question...');
+            showQuestion();
+          }, 50);
         });
       }, LOGO_ANIMATION_DURATION);
     }
@@ -720,13 +687,20 @@
      * Efficiently updates DOM elements
      */
     function showQuestion() {
+      console.log(`📋 Showing question ${currentQuestion + 1}/${questions.length}`);
+
       const question = questions[currentQuestion];
 
-      document.getElementById('question-number').textContent =
-        `Question ${currentQuestion + 1} of ${questions.length}`;
-      document.getElementById('question-title').textContent = question.title;
+      if (!question) {
+        console.error('❌ Question not found at index:', currentQuestion);
+        return;
+      }
 
-      const answersGrid = document.getElementById('answers-grid');
+      console.log('Question data:', question);
+
+      questionNumber.textContent = `Question ${currentQuestion + 1} of ${questions.length}`;
+      questionTitle.textContent = question.title;
+
       answersGrid.innerHTML = '';
 
       question.answers.forEach((answer, index) => {
@@ -735,22 +709,27 @@
         button.textContent = answer.text;
         button.onclick = () => selectAnswer(index, answer.value);
         answersGrid.appendChild(button);
+        console.log(`  ✓ Added answer: ${answer.text}`);
       });
 
       selectedAnswer = null;
-      document.getElementById('next-btn').classList.remove('active');
+      nextBtn.classList.remove('active');
+
+      console.log('✅ Question rendered successfully');
     }
 
     /**
      * Handles answer selection with visual feedback
      */
     function selectAnswer(index, value) {
+      console.log(`🎯 Selected answer: ${value}`);
+
       const buttons = document.querySelectorAll('.answer-btn');
       buttons.forEach(btn => btn.classList.remove('selected'));
       buttons[index].classList.add('selected');
 
       selectedAnswer = value;
-      document.getElementById('next-btn').classList.add('active');
+      nextBtn.classList.add('active');
     }
 
     /**
@@ -758,8 +737,12 @@
      * Includes transition effects between questions
      */
     function nextQuestion() {
-      if (!selectedAnswer) return;
+      if (!selectedAnswer) {
+        console.warn('⚠️ No answer selected');
+        return;
+      }
 
+      console.log(`➡️ Moving to next question. Answer: ${selectedAnswer}`);
       answers.push(selectedAnswer);
 
       if (currentQuestion < questions.length - 1) {
@@ -768,6 +751,7 @@
           showQuestion();
         });
       } else {
+        console.log('🏁 Quiz complete! Showing products...');
         playTransition(() => {
           showProducts();
         });
@@ -784,9 +768,13 @@
         return acc;
       }, {});
 
-      return Object.keys(categoryPriority).reduce((a, b) =>
+      const topCategory = Object.keys(categoryPriority).reduce((a, b) =>
         categoryPriority[a] > categoryPriority[b] ? a : b
       );
+
+      console.log('🎯 Top category:', topCategory, categoryPriority);
+
+      return topCategory;
     }
 
     /**
@@ -796,6 +784,8 @@
     function showProducts() {
       const topCategory = calculateTopCategory();
       const category = productCategories[topCategory] || productCategories.minimal;
+
+      console.log('🛍️ Showing products for category:', category.title);
 
       quizScreen.classList.remove('visible');
       setTimeout(() => {
@@ -816,6 +806,8 @@
 
       // Render merch
       renderProductGrid('merch-grid', category.merch);
+
+      console.log('✅ Products rendered');
     }
 
     /**
@@ -849,6 +841,8 @@
      * Includes smooth transition effects
      */
     function restartQuiz() {
+      console.log('🔄 Restarting quiz...');
+
       playTransition(() => {
         // Reset state
         currentQuestion = 0;
@@ -863,14 +857,24 @@
           backBtn.style.display = 'none';
           welcomeScreen.style.display = 'flex';
           logo.classList.remove('animated');
+          console.log('✅ Reset complete');
         }, 500);
       });
     }
 
-    // Initialize: Log app state for debugging
-    console.log('The Pulp - Interactive Experience Initialized');
-    console.log('Questions:', questions.length);
-    console.log('Categories:', Object.keys(productCategories).length);
+    // Initialize application
+    console.log('🚀 The Pulp - Interactive Experience Initialized');
+    console.log('📚 Questions loaded:', questions.length);
+    console.log('🏷️ Categories:', Object.keys(productCategories).length);
+    console.log('👉 Move your mouse near the logo to begin!');
+
+    // Verify DOM elements loaded
+    console.log('DOM Check:', {
+      logo: !!logo,
+      quizScreen: !!quizScreen,
+      questionTitle: !!questionTitle,
+      answersGrid: !!answersGrid
+    });
   </script>
 </body>
 </html>
