@@ -19,74 +19,69 @@
       overflow-x: hidden;
     }
 
-         /* Main Container */
-     .container {
-       min-height: 100vh;
-     }
-
-    /* Welcome Screen */
-         .welcome-screen {
-       display: flex;
-       flex-direction: column;
-       align-items: center;
-       justify-content: center;
-       min-height: 100vh;
-       text-align: center;
-       padding: 2rem;
-     }
-
-     .welcome-logo {
-       height: 120px;
-       margin-bottom: 2rem;
-     }
-
-    .welcome-subtitle {
-      font-size: 1.2rem;
-      margin-bottom: 3rem;
-      max-width: 600px;
-      line-height: 1.5;
+    /* Main Container */
+    .container {
+      min-height: 100vh;
     }
 
-         .start-btn {
-       background: #d2691e;
-       color: #fff;
-       border: none;
-       padding: 1rem 3rem;
-       font-family: 'Courier Prime', monospace;
-       font-size: 1.1rem;
-       font-weight: 700;
-       text-transform: uppercase;
-       letter-spacing: 1px;
-       cursor: pointer;
-       transition: all 0.2s ease;
-       border: 2px solid #d2691e;
-     }
+    /* Welcome Screen */
+    .welcome-screen {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      text-align: center;
+      padding: 2rem;
+      position: relative;
+    }
 
-     .start-btn:hover {
-       background: #fff;
-       color: #d2691e;
-     }
+    .welcome-logo {
+      height: 150px;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+      cursor: pointer;
+      z-index: 100;
+    }
+
+    .welcome-logo.animated {
+      top: 3rem;
+      left: 3rem;
+      transform: translate(0, 0);
+      height: 60px;
+      position: fixed;
+    }
 
     /* Quiz Screen */
-         .quiz-screen {
-       display: none;
-       flex-direction: column;
-       align-items: center;
-       justify-content: center;
-       min-height: 100vh;
-       padding: 2rem;
-       text-align: center;
-     }
+    .quiz-screen {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 2rem;
+      padding-top: 8rem;
+      text-align: center;
+      opacity: 0;
+      transition: opacity 0.5s ease;
+    }
 
-     .quiz-progress {
-       position: fixed;
-       top: 0;
-       left: 0;
-       right: 0;
-       height: 4px;
-       background: #f0f0f0;
-       z-index: 999;
-     }
+    .quiz-screen.visible {
+      opacity: 1;
+    }
+
+    .quiz-progress {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: #f0f0f0;
+      z-index: 999;
+    }
 
     .quiz-progress-bar {
       height: 100%;
@@ -179,7 +174,8 @@
     .product-screen {
       display: none;
       padding: 2rem;
-      max-width: 1200px;
+      padding-top: 8rem;
+      max-width: 1400px;
       margin: 0 auto;
     }
 
@@ -200,6 +196,15 @@
       font-size: 1.2rem;
       color: #666;
       margin-bottom: 2rem;
+    }
+
+    .section-header {
+      font-size: 2rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin: 3rem 0 2rem 0;
+      text-align: center;
     }
 
     .products-grid {
@@ -251,65 +256,71 @@
       font-weight: 700;
     }
 
-         .back-btn {
-       position: fixed;
-       top: 2rem;
-       left: 2rem;
-       background: none;
-       border: none;
-       font-family: 'Courier Prime', monospace;
-       font-size: 1rem;
-       text-transform: uppercase;
-       letter-spacing: 1px;
-       cursor: pointer;
-       color: #666;
-       transition: color 0.2s ease;
-     }
+    .back-btn {
+      position: fixed;
+      top: 2rem;
+      right: 2rem;
+      background: none;
+      border: none;
+      font-family: 'Courier Prime', monospace;
+      font-size: 1rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      cursor: pointer;
+      color: #666;
+      transition: color 0.2s ease;
+      z-index: 1000;
+    }
 
-         .back-btn:hover {
-       color: #d2691e;
-     }
+    .back-btn:hover {
+      color: #ff0000;
+    }
 
-         /* Responsive */
-     @media (max-width: 768px) {
-       .welcome-logo {
-         height: 80px;
-       }
+    /* Responsive */
+    @media (max-width: 768px) {
+      .welcome-logo {
+        height: 100px;
+      }
 
-       .question-title {
-         font-size: 1.8rem;
-       }
+      .welcome-logo.animated {
+        height: 50px;
+        top: 2rem;
+        left: 2rem;
+      }
 
-       .product-title {
-         font-size: 2rem;
-       }
+      .question-title {
+        font-size: 1.8rem;
+      }
 
-       .answers-grid {
-         gap: 0.5rem;
-       }
+      .product-title {
+        font-size: 2rem;
+      }
 
-       .answer-btn {
-         padding: 1rem;
-         font-size: 1rem;
-       }
+      .section-header {
+        font-size: 1.5rem;
+      }
 
-       .products-grid {
-         grid-template-columns: 1fr;
-         gap: 1rem;
-       }
-     }
+      .answers-grid {
+        gap: 0.5rem;
+      }
+
+      .answer-btn {
+        padding: 1rem;
+        font-size: 1rem;
+      }
+
+      .products-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+      }
+    }
   </style>
 </head>
 <body>
   <div class="container">
     <!-- Welcome Screen -->
     <div class="welcome-screen" id="welcome-screen">
-      <img src="assets/logo.png" alt="The Pulp" class="welcome-logo">
-      <p class="welcome-subtitle">
-        Discover your perfect match from our curated collection. 
-        Answer a few questions to find products tailored to your taste.
-      </p>
-      <button class="start-btn" onclick="startQuiz()">Start Quiz</button>
+      <img src="assets/logo.png" alt="The Pulp" class="welcome-logo" id="logo">
     </div>
 
     <!-- Quiz Screen -->
@@ -328,14 +339,18 @@
 
     <!-- Product Screen -->
     <div class="product-screen" id="product-screen">
-      <button class="back-btn" onclick="restartQuiz()">← Back to Quiz</button>
-      
+      <button class="back-btn" onclick="restartQuiz()">← Restart</button>
+
       <div class="product-hero">
-        <h1 class="product-title" id="product-category-title">Your Matches</h1>
+        <h1 class="product-title" id="product-category-title">Your Perfect Match</h1>
         <p class="product-subtitle" id="product-category-subtitle">Based on your preferences</p>
       </div>
 
+      <h2 class="section-header">Magazine Collection</h2>
       <div class="products-grid" id="products-grid"></div>
+
+      <h2 class="section-header">Merch</h2>
+      <div class="products-grid" id="merch-grid"></div>
     </div>
   </div>
 
@@ -384,36 +399,56 @@
         title: "Bold Collection",
         subtitle: "Make a statement",
         products: [
-          { name: "Bold Tee", price: "$45", image: "Bold Statement Piece" },
-          { name: "Statement Hoodie", price: "$85", image: "Eye-catching Design" },
-          { name: "Limited Print", price: "$65", image: "Exclusive Artwork" }
+          { name: "The Pulp Issue #1", price: "$25", image: "Bold Statement Issue" },
+          { name: "The Pulp Issue #2", price: "$25", image: "Eye-catching Design" },
+          { name: "Limited Print Collection", price: "$65", image: "Exclusive Artwork" }
+        ],
+        merch: [
+          { name: "Bold Logo Tee", price: "$45", image: "Statement Tee" },
+          { name: "Statement Hoodie", price: "$85", image: "Bold Hoodie" },
+          { name: "Collector's Pin Set", price: "$30", image: "Enamel Pins" }
         ]
       },
       minimal: {
         title: "Essential Collection",
         subtitle: "Clean and timeless",
         products: [
-          { name: "Classic Tee", price: "$35", image: "Minimalist Design" },
-          { name: "Essential Hoodie", price: "$75", image: "Clean Lines" },
-          { name: "Simple Cap", price: "$45", image: "Understated Style" }
+          { name: "The Pulp Issue #1", price: "$25", image: "Minimalist Design" },
+          { name: "The Pulp Issue #3", price: "$25", image: "Clean Lines" },
+          { name: "Classic Bundle", price: "$60", image: "Understated Style" }
+        ],
+        merch: [
+          { name: "Classic Logo Tee", price: "$35", image: "Minimalist Tee" },
+          { name: "Essential Hoodie", price: "$75", image: "Clean Hoodie" },
+          { name: "Simple Cap", price: "$45", image: "Classic Cap" }
         ]
       },
       vintage: {
         title: "Heritage Collection",
         subtitle: "Nostalgic classics",
         products: [
-          { name: "Vintage Logo Tee", price: "$50", image: "Retro Aesthetic" },
-          { name: "Classic Crewneck", price: "$80", image: "Timeless Appeal" },
-          { name: "Heritage Jacket", price: "$120", image: "Vintage Inspired" }
+          { name: "The Pulp Archives Vol. 1", price: "$40", image: "Retro Aesthetic" },
+          { name: "The Pulp Issue #4", price: "$25", image: "Vintage Issue" },
+          { name: "Heritage Bundle", price: "$75", image: "Timeless Appeal" }
+        ],
+        merch: [
+          { name: "Vintage Logo Tee", price: "$50", image: "Retro Tee" },
+          { name: "Classic Crewneck", price: "$80", image: "Vintage Crewneck" },
+          { name: "Heritage Tote", price: "$40", image: "Canvas Tote" }
         ]
       },
       edgy: {
         title: "Underground Collection",
         subtitle: "For the rebels",
         products: [
+          { name: "The Pulp Issue #5", price: "$25", image: "Bold Graphics" },
+          { name: "Underground Special", price: "$30", image: "Edgy Edition" },
+          { name: "Rebel Bundle", price: "$70", image: "Urban Collection" }
+        ],
+        merch: [
           { name: "Edgy Graphic Tee", price: "$55", image: "Bold Graphics" },
           { name: "Street Hoodie", price: "$90", image: "Urban Style" },
-          { name: "Rebel Accessories", price: "$35", image: "Edgy Details" }
+          { name: "Rebel Accessories Pack", price: "$50", image: "Edgy Details" }
         ]
       }
     };
@@ -421,11 +456,44 @@
     let currentQuestion = 0;
     let answers = [];
     let selectedAnswer = null;
+    let logoAnimated = false;
 
-    function startQuiz() {
-      document.getElementById('welcome-screen').style.display = 'none';
-      document.getElementById('quiz-screen').style.display = 'flex';
-      showQuestion();
+    // Mouse proximity detection
+    const logo = document.getElementById('logo');
+    const detectRadius = 300; // Large radius for detection
+
+    document.addEventListener('mousemove', (e) => {
+      if (logoAnimated) return;
+
+      const logoRect = logo.getBoundingClientRect();
+      const logoCenterX = logoRect.left + logoRect.width / 2;
+      const logoCenterY = logoRect.top + logoRect.height / 2;
+
+      const distance = Math.sqrt(
+        Math.pow(e.clientX - logoCenterX, 2) +
+        Math.pow(e.clientY - logoCenterY, 2)
+      );
+
+      if (distance < detectRadius) {
+        animateLogoAndStartQuiz();
+      }
+    });
+
+    function animateLogoAndStartQuiz() {
+      if (logoAnimated) return;
+      logoAnimated = true;
+
+      // Animate logo to top left
+      logo.classList.add('animated');
+
+      // After animation completes, show quiz
+      setTimeout(() => {
+        document.getElementById('quiz-screen').style.display = 'flex';
+        setTimeout(() => {
+          document.getElementById('quiz-screen').classList.add('visible');
+        }, 50);
+        showQuestion();
+      }, 800);
     }
 
     function showQuestion() {
@@ -454,7 +522,7 @@
     function selectAnswer(index, value) {
       document.querySelectorAll('.answer-btn').forEach(btn => btn.classList.remove('selected'));
       document.querySelectorAll('.answer-btn')[index].classList.add('selected');
-      
+
       selectedAnswer = value;
       document.getElementById('next-btn').classList.add('active');
     }
@@ -479,7 +547,7 @@
         return acc;
       }, {});
 
-      const topCategory = Object.keys(categoryPriority).reduce((a, b) => 
+      const topCategory = Object.keys(categoryPriority).reduce((a, b) =>
         categoryPriority[a] > categoryPriority[b] ? a : b
       );
 
@@ -491,6 +559,7 @@
       document.getElementById('product-category-title').textContent = category.title;
       document.getElementById('product-category-subtitle').textContent = category.subtitle;
 
+      // Show products
       const productsGrid = document.getElementById('products-grid');
       productsGrid.innerHTML = '';
 
@@ -506,15 +575,38 @@
         `;
         productsGrid.appendChild(productCard);
       });
+
+      // Show merch
+      const merchGrid = document.getElementById('merch-grid');
+      merchGrid.innerHTML = '';
+
+      category.merch.forEach(product => {
+        const productCard = document.createElement('div');
+        productCard.className = 'product-card';
+        productCard.innerHTML = `
+          <div class="product-image">${product.image}</div>
+          <div class="product-info">
+            <div class="product-name">${product.name}</div>
+            <div class="product-price">${product.price}</div>
+          </div>
+        `;
+        merchGrid.appendChild(productCard);
+      });
     }
 
     function restartQuiz() {
       currentQuestion = 0;
       answers = [];
       selectedAnswer = null;
-      
+      logoAnimated = false;
+
       document.getElementById('product-screen').style.display = 'none';
+      document.getElementById('quiz-screen').style.display = 'none';
+      document.getElementById('quiz-screen').classList.remove('visible');
       document.getElementById('welcome-screen').style.display = 'flex';
+
+      // Reset logo
+      logo.classList.remove('animated');
     }
   </script>
 </body>
