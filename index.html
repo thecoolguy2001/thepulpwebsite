@@ -120,6 +120,22 @@
       width: 100%;
       margin: 0 auto;
       background: transparent;
+      transition: transform 0.5s ease-in-out, opacity 0.3s ease;
+    }
+
+    .question-container.slide-out {
+      transform: translateX(-100%);
+      opacity: 0;
+    }
+
+    .question-container.slide-in {
+      transform: translateX(100%);
+      opacity: 0;
+    }
+
+    .question-container.active {
+      transform: translateX(0);
+      opacity: 1;
     }
 
     .question-number {
@@ -214,6 +230,183 @@
     .nav-btn.disabled {
       opacity: 0.3;
       pointer-events: none;
+    }
+
+    /* Email Capture Screen */
+    .email-screen {
+      display: none;
+      min-height: 100vh;
+      position: relative;
+      z-index: 100;
+      background: #fff;
+      padding: 2rem;
+    }
+
+    .email-screen.visible {
+      display: flex !important;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .email-container {
+      text-align: center;
+      max-width: 600px;
+      width: 100%;
+    }
+
+    .email-label {
+      font-family: 'Fira Code', monospace;
+      font-size: 1.2rem;
+      font-weight: 400;
+      margin-bottom: 2rem;
+      color: #000;
+      text-transform: lowercase;
+    }
+
+    .email-input {
+      width: 100%;
+      max-width: 460px;
+      padding: 0.75rem 1rem;
+      font-family: 'Fira Code', monospace;
+      font-size: 1rem;
+      border: 2px solid #000;
+      background: #fff;
+      color: #000;
+      outline: none;
+      text-align: center;
+    }
+
+    .email-input:focus {
+      border-color: #000;
+    }
+
+    /* Magazine Purchase Screen */
+    .magazine-screen {
+      display: none;
+      min-height: 100vh;
+      position: relative;
+      z-index: 100;
+      background: #fff;
+      padding: 2rem;
+    }
+
+    .magazine-screen.visible {
+      display: flex !important;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+    }
+
+    .magazine-container {
+      text-align: center;
+      max-width: 800px;
+      width: 100%;
+    }
+
+    .magazine-cover {
+      max-width: 400px;
+      width: 100%;
+      margin: 0 auto 2rem auto;
+    }
+
+    .magazine-cover img {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    .buy-btn {
+      font-family: 'Fira Code', monospace;
+      font-size: 1rem;
+      font-weight: 400;
+      text-transform: lowercase;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      color: #000;
+      padding: 0;
+      transition: opacity 0.2s ease;
+    }
+
+    .buy-btn:hover {
+      opacity: 0.6;
+    }
+
+    /* Accessories Screen */
+    .accessories-screen {
+      display: none;
+      min-height: 100vh;
+      position: relative;
+      z-index: 100;
+      background: #fff;
+      padding: 2rem;
+    }
+
+    .accessories-screen.visible {
+      display: flex !important;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+    }
+
+    .accessories-container {
+      text-align: center;
+      max-width: 1200px;
+      width: 100%;
+    }
+
+    .accessories-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 3rem;
+      margin-bottom: 4rem;
+    }
+
+    .accessory-item {
+      text-align: center;
+    }
+
+    .accessory-item img {
+      width: 100%;
+      max-width: 300px;
+      height: auto;
+      margin-bottom: 1.5rem;
+    }
+
+    .add-to-order-btn {
+      font-family: 'Fira Code', monospace;
+      font-size: 0.9rem;
+      font-weight: 400;
+      text-transform: lowercase;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      color: #000;
+      padding: 0;
+      transition: opacity 0.2s ease;
+      display: block;
+      margin: 0 auto;
+    }
+
+    .add-to-order-btn:hover {
+      opacity: 0.6;
+    }
+
+    .checkout-btn {
+      font-family: 'Fira Code', monospace;
+      font-size: 1rem;
+      font-weight: 400;
+      text-transform: lowercase;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      color: #000;
+      padding: 0;
+      transition: opacity 0.2s ease;
+    }
+
+    .checkout-btn:hover {
+      opacity: 0.6;
     }
 
     /* Product Screen */
@@ -380,6 +573,27 @@
       .nav-btn {
         font-size: 0.9rem;
       }
+
+      .email-label {
+        font-size: 1rem;
+      }
+
+      .email-input {
+        font-size: 0.9rem;
+      }
+
+      .magazine-cover {
+        max-width: 300px;
+      }
+
+      .accessories-grid {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+      }
+
+      .accessory-item img {
+        max-width: 250px;
+      }
     }
   </style>
 </head>
@@ -399,7 +613,7 @@
 
     <!-- Quiz Screen -->
     <div class="quiz-screen" id="quiz-screen">
-      <div class="question-container">
+      <div class="question-container" id="question-container">
         <div class="question-number" id="question-number">Question 1 of 4</div>
         <h2 class="question-title" id="question-title"></h2>
         <div class="answers-grid" id="answers-grid"></div>
@@ -407,6 +621,45 @@
       <div class="quiz-navigation">
         <button class="nav-btn" id="back-btn-quiz" onclick="previousQuestion()">← back</button>
         <button class="nav-btn" id="continue-btn" onclick="nextQuestion()">continue →</button>
+      </div>
+    </div>
+
+    <!-- Email Capture Screen -->
+    <div class="email-screen" id="email-screen">
+      <div class="email-container">
+        <div class="email-label">enter your email</div>
+        <input type="email" class="email-input" id="email-input" placeholder="">
+      </div>
+    </div>
+
+    <!-- Magazine Purchase Screen -->
+    <div class="magazine-screen" id="magazine-screen">
+      <div class="magazine-container">
+        <div class="magazine-cover">
+          <img src="assets/magazine-cover.png" alt="Magazine Cover" id="magazine-cover-img">
+        </div>
+        <button class="buy-btn" onclick="showAccessories()">buy now</button>
+      </div>
+    </div>
+
+    <!-- Accessories Screen -->
+    <div class="accessories-screen" id="accessories-screen">
+      <div class="accessories-container">
+        <div class="accessories-grid">
+          <div class="accessory-item">
+            <img src="assets/magazine-cover.png" alt="Magazine 1">
+            <button class="add-to-order-btn">add to order</button>
+          </div>
+          <div class="accessory-item">
+            <img src="assets/magazine-cover.png" alt="Magazine 2">
+            <button class="add-to-order-btn">add to order</button>
+          </div>
+          <div class="accessory-item">
+            <img src="assets/magazine-cover.png" alt="Magazine 3">
+            <button class="add-to-order-btn">add to order</button>
+          </div>
+        </div>
+        <button class="checkout-btn">continue to checkout</button>
       </div>
     </div>
 
@@ -536,12 +789,17 @@
     const logo = document.getElementById('logo');
     const welcomeScreen = document.getElementById('welcome-screen');
     const quizScreen = document.getElementById('quiz-screen');
+    const emailScreen = document.getElementById('email-screen');
+    const magazineScreen = document.getElementById('magazine-screen');
+    const accessoriesScreen = document.getElementById('accessories-screen');
     const productScreen = document.getElementById('product-screen');
+    const questionContainer = document.getElementById('question-container');
     const backBtnQuiz = document.getElementById('back-btn-quiz');
     const continueBtn = document.getElementById('continue-btn');
     const questionNumber = document.getElementById('question-number');
     const questionTitle = document.getElementById('question-title');
     const answersGrid = document.getElementById('answers-grid');
+    const emailInput = document.getElementById('email-input');
 
     // Configuration
     const DETECT_RADIUS = 300;
@@ -619,7 +877,7 @@
      * Renders current question with answers
      * Efficiently updates DOM elements
      */
-    function showQuestion() {
+    function showQuestion(skipAnimation = false) {
       console.log(`📋 Showing question ${currentQuestion + 1}/${questions.length}`);
 
       const question = questions[currentQuestion];
@@ -653,6 +911,18 @@
         backBtnQuiz.classList.add('disabled');
       } else {
         backBtnQuiz.classList.remove('disabled');
+      }
+
+      // Add slide animation
+      if (!skipAnimation) {
+        questionContainer.classList.remove('slide-out');
+        questionContainer.classList.add('slide-in');
+        setTimeout(() => {
+          questionContainer.classList.remove('slide-in');
+          questionContainer.classList.add('active');
+        }, 50);
+      } else {
+        questionContainer.classList.add('active');
       }
 
       console.log('✅ Question rendered successfully');
@@ -698,15 +968,23 @@
       answers.push(selectedAnswer);
 
       if (currentQuestion < questions.length - 1) {
-        playTransition(() => {
+        // Slide out current question
+        questionContainer.classList.remove('active');
+        questionContainer.classList.add('slide-out');
+
+        setTimeout(() => {
           currentQuestion++;
           showQuestion();
-        });
+        }, 500);
       } else {
-        console.log('🏁 Quiz complete! Showing products...');
-        playTransition(() => {
-          showProducts();
-        });
+        console.log('🏁 Quiz complete! Showing email screen...');
+        // Slide out last question and show email
+        questionContainer.classList.remove('active');
+        questionContainer.classList.add('slide-out');
+
+        setTimeout(() => {
+          showEmailScreen();
+        }, 500);
       }
     }
 
@@ -784,6 +1062,59 @@
     }
 
     /**
+     * Shows email capture screen
+     */
+    function showEmailScreen() {
+      console.log('📧 Showing email screen...');
+
+      // Hide quiz screen
+      quizScreen.classList.remove('visible');
+
+      // Show email screen
+      emailScreen.classList.add('visible');
+
+      // Auto-advance on Enter key
+      emailInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter' && emailInput.value.trim()) {
+          showMagazineScreen();
+        }
+      });
+
+      // Auto-advance after 2 seconds or on blur if email is entered
+      setTimeout(() => {
+        if (emailInput.value.trim()) {
+          showMagazineScreen();
+        }
+      }, 3000);
+    }
+
+    /**
+     * Shows magazine purchase screen
+     */
+    function showMagazineScreen() {
+      console.log('📖 Showing magazine screen...');
+
+      // Hide email screen
+      emailScreen.classList.remove('visible');
+
+      // Show magazine screen
+      magazineScreen.classList.add('visible');
+    }
+
+    /**
+     * Shows accessories screen
+     */
+    function showAccessories() {
+      console.log('🛍️ Showing accessories screen...');
+
+      // Hide magazine screen
+      magazineScreen.classList.remove('visible');
+
+      // Show accessories screen
+      accessoriesScreen.classList.add('visible');
+    }
+
+    /**
      * Resets application state and returns to welcome screen
      * Includes smooth transition effects
      */
@@ -800,8 +1131,12 @@
         // Reset UI
         productScreen.classList.remove('visible');
         quizScreen.classList.remove('visible');
+        emailScreen.classList.remove('visible');
+        magazineScreen.classList.remove('visible');
+        accessoriesScreen.classList.remove('visible');
         welcomeScreen.classList.remove('hidden');
         logo.classList.remove('animated');
+        emailInput.value = '';
         console.log('✅ Reset complete');
       });
     }
