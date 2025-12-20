@@ -96,6 +96,7 @@
       height: 60px;
       position: fixed;
       z-index: 1000;
+      cursor: pointer;
     }
 
     /* Quiz Screen */
@@ -308,27 +309,6 @@
       font-weight: 700;
     }
 
-    .back-btn {
-      position: fixed;
-      top: 2rem;
-      right: 2rem;
-      background: none;
-      border: none;
-      font-family: 'Fira Code', monospace;
-      font-size: 1rem;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      cursor: pointer;
-      color: #666;
-      transition: color 0.2s ease;
-      z-index: 1000;
-      display: none;
-    }
-
-    .back-btn:hover {
-      color: #8B4513;
-    }
-
     /* Transition Overlay - Simple Fade */
     .transition-overlay {
       display: none;
@@ -432,8 +412,6 @@
 
     <!-- Product Screen -->
     <div class="product-screen" id="product-screen">
-      <button class="back-btn" id="back-btn" onclick="restartQuiz()">← Restart</button>
-
       <div class="product-hero">
         <h1 class="product-title" id="product-category-title">Your Perfect Match</h1>
         <p class="product-subtitle" id="product-category-subtitle">Based on your preferences</p>
@@ -559,7 +537,6 @@
     const welcomeScreen = document.getElementById('welcome-screen');
     const quizScreen = document.getElementById('quiz-screen');
     const productScreen = document.getElementById('product-screen');
-    const backBtn = document.getElementById('back-btn');
     const backBtnQuiz = document.getElementById('back-btn-quiz');
     const continueBtn = document.getElementById('continue-btn');
     const questionNumber = document.getElementById('question-number');
@@ -595,6 +572,16 @@
 
       if (distance < DETECT_RADIUS) {
         animateLogoAndStartQuiz();
+      }
+    });
+
+    /**
+     * Logo click handler - allows users to restart at any time
+     */
+    logo.addEventListener('click', () => {
+      if (logoAnimated) {
+        // If quiz has started, restart it
+        restartQuiz();
       }
     });
 
@@ -757,7 +744,6 @@
 
       // Show product screen
       productScreen.classList.add('visible');
-      backBtn.style.display = 'block';
 
       document.getElementById('product-category-title').textContent = category.title;
       document.getElementById('product-category-subtitle').textContent = category.subtitle;
@@ -814,7 +800,6 @@
         // Reset UI
         productScreen.classList.remove('visible');
         quizScreen.classList.remove('visible');
-        backBtn.style.display = 'none';
         welcomeScreen.classList.remove('hidden');
         logo.classList.remove('animated');
         console.log('✅ Reset complete');
