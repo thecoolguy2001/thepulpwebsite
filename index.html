@@ -232,6 +232,10 @@
       pointer-events: none;
     }
 
+    .nav-btn.hidden {
+      display: none;
+    }
+
     /* Email Capture Screen */
     .email-screen {
       display: none;
@@ -868,7 +872,7 @@
           console.log('📺 Displaying quiz screen...');
           quizScreen.classList.add('visible');
           console.log('✨ Quiz screen should be visible NOW');
-          showQuestion(true); // Skip animation for first question
+          showQuestion(); // Enable slide-in animation for first question
         });
       }, LOGO_ANIMATION_DURATION);
     }
@@ -894,28 +898,50 @@
 
       answersGrid.innerHTML = '';
 
+      // Check if this question was previously answered
+      const previousAnswer = answers[currentQuestion];
+
       question.answers.forEach((answer, index) => {
         const button = document.createElement('button');
         button.className = 'answer-btn';
         button.textContent = answer.text;
         button.onclick = () => selectAnswer(index, answer.value);
+
+        // Restore previous selection
+        if (previousAnswer === answer.value) {
+          button.classList.add('selected');
+          selectedAnswer = answer.value;
+        }
+
         answersGrid.appendChild(button);
         console.log(`  ✓ Added answer: ${answer.text}`);
       });
 
-      selectedAnswer = null;
-      continueBtn.classList.add('disabled');
-
-      // Update back button state
+      // Update button visibility based on question and selection
       if (currentQuestion === 0) {
-        backBtnQuiz.classList.add('disabled');
+        // First question: hide back, show/hide continue based on selection
+        backBtnQuiz.classList.add('hidden');
+        if (selectedAnswer) {
+          continueBtn.classList.remove('hidden');
+          continueBtn.classList.remove('disabled');
+        } else {
+          continueBtn.classList.add('hidden');
+        }
       } else {
+        // Questions 2+: show back, show continue
+        backBtnQuiz.classList.remove('hidden');
         backBtnQuiz.classList.remove('disabled');
+        continueBtn.classList.remove('hidden');
+        if (selectedAnswer) {
+          continueBtn.classList.remove('disabled');
+        } else {
+          continueBtn.classList.add('disabled');
+        }
       }
 
-      // Add slide animation
+      // Add slide animation - always slide in from right
       if (!skipAnimation) {
-        questionContainer.classList.remove('slide-out');
+        questionContainer.classList.remove('slide-out', 'active');
         questionContainer.classList.add('slide-in');
         setTimeout(() => {
           questionContainer.classList.remove('slide-in');
@@ -939,6 +965,11 @@
       buttons[index].classList.add('selected');
 
       selectedAnswer = value;
+
+      // Show continue button on first question, enable it on others
+      if (currentQuestion === 0) {
+        continueBtn.classList.remove('hidden');
+      }
       continueBtn.classList.remove('disabled');
     }
 
@@ -954,7 +985,7 @@
         questionContainer.classList.add('slide-in'); // Slide to right when going back
 
         setTimeout(() => {
-          answers.pop(); // Remove the last answer
+          // Don't remove the answer, just go back
           currentQuestion--;
 
           // Slide in from left
@@ -980,7 +1011,9 @@
       }
 
       console.log(`➡️ Moving to next question. Answer: ${selectedAnswer}`);
-      answers.push(selectedAnswer);
+
+      // Store answer at current question index
+      answers[currentQuestion] = selectedAnswer;
 
       if (currentQuestion < questions.length - 1) {
         // Slide out current question
@@ -989,7 +1022,7 @@
 
         setTimeout(() => {
           currentQuestion++;
-          showQuestion();
+          showQuestion(); // Enable slide-in animation
         }, 500);
       } else {
         console.log('🏁 Quiz complete! Showing email screen...');
