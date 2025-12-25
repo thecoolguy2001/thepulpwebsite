@@ -123,16 +123,31 @@
       transition: transform 0.5s ease-in-out, opacity 0.3s ease;
     }
 
-    .question-container.slide-out {
+    /* Slide out to the left (when going forward) */
+    .question-container.slide-out-left {
       transform: translateX(-100%);
       opacity: 0;
     }
 
-    .question-container.slide-in {
+    /* Slide out to the right (when going backward) */
+    .question-container.slide-out-right {
       transform: translateX(100%);
       opacity: 0;
     }
 
+    /* Starting position: off-screen right (for sliding in from right) */
+    .question-container.slide-in-from-right {
+      transform: translateX(100%);
+      opacity: 0;
+    }
+
+    /* Starting position: off-screen left (for sliding in from left) */
+    .question-container.slide-in-from-left {
+      transform: translateX(-100%);
+      opacity: 0;
+    }
+
+    /* Active/centered position */
     .question-container.active {
       transform: translateX(0);
       opacity: 1;
@@ -880,8 +895,9 @@
     /**
      * Renders current question with answers
      * Efficiently updates DOM elements
+     * @param {string} direction - 'forward', 'backward', or 'none' for animation direction
      */
-    function showQuestion(skipAnimation = false) {
+    function showQuestion(direction = 'forward') {
       console.log(`📋 Showing question ${currentQuestion + 1}/${questions.length}`);
 
       const question = questions[currentQuestion];
@@ -939,12 +955,21 @@
         }
       }
 
-      // Add slide animation - always slide in from right
-      if (!skipAnimation) {
-        questionContainer.classList.remove('slide-out', 'active');
-        questionContainer.classList.add('slide-in');
+      // Handle slide animation based on direction
+      if (direction !== 'none') {
+        // Clear all animation classes
+        questionContainer.classList.remove('slide-out-left', 'slide-out-right', 'slide-in-from-left', 'slide-in-from-right', 'active');
+
+        // Set starting position based on direction
+        if (direction === 'forward') {
+          questionContainer.classList.add('slide-in-from-right');
+        } else if (direction === 'backward') {
+          questionContainer.classList.add('slide-in-from-left');
+        }
+
+        // Trigger animation to center
         setTimeout(() => {
-          questionContainer.classList.remove('slide-in');
+          questionContainer.classList.remove('slide-in-from-right', 'slide-in-from-left');
           questionContainer.classList.add('active');
         }, 50);
       } else {
