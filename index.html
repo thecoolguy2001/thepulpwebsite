@@ -1005,22 +1005,15 @@
       if (currentQuestion > 0) {
         console.log(`⬅️ Going back to question ${currentQuestion}`);
 
-        // Slide out current question to the right
+        // Slide OUT current question to the RIGHT
         questionContainer.classList.remove('active');
-        questionContainer.classList.add('slide-in'); // Slide to right when going back
+        questionContainer.classList.add('slide-out-right');
 
         setTimeout(() => {
           // Don't remove the answer, just go back
           currentQuestion--;
-
-          // Slide in from left
-          questionContainer.classList.remove('slide-in');
-          questionContainer.classList.add('slide-out');
-
-          setTimeout(() => {
-            questionContainer.classList.remove('slide-out');
-            showQuestion(true); // Skip animation, we're handling it manually
-          }, 50);
+          // Slide IN from LEFT
+          showQuestion('backward');
         }, 500);
       }
     }
@@ -1041,19 +1034,20 @@
       answers[currentQuestion] = selectedAnswer;
 
       if (currentQuestion < questions.length - 1) {
-        // Slide out current question
+        // Slide OUT current question to the LEFT
         questionContainer.classList.remove('active');
-        questionContainer.classList.add('slide-out');
+        questionContainer.classList.add('slide-out-left');
 
         setTimeout(() => {
           currentQuestion++;
-          showQuestion(); // Enable slide-in animation
+          // Slide IN from RIGHT
+          showQuestion('forward');
         }, 500);
       } else {
         console.log('🏁 Quiz complete! Showing email screen...');
-        // Slide out last question and show email
+        // Slide OUT last question to the LEFT
         questionContainer.classList.remove('active');
-        questionContainer.classList.add('slide-out');
+        questionContainer.classList.add('slide-out-left');
 
         setTimeout(() => {
           showEmailScreen();
