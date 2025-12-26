@@ -914,6 +914,9 @@
 
       answersGrid.innerHTML = '';
 
+      // Reset selectedAnswer for this question
+      selectedAnswer = null;
+
       // Check if this question was previously answered
       const previousAnswer = answers[currentQuestion];
 
@@ -967,11 +970,14 @@
           questionContainer.classList.add('slide-in-from-left');
         }
 
-        // Trigger animation to center
-        setTimeout(() => {
+        // Force reflow to ensure starting position is applied
+        void questionContainer.offsetWidth;
+
+        // Trigger animation to center using requestAnimationFrame
+        requestAnimationFrame(() => {
           questionContainer.classList.remove('slide-in-from-right', 'slide-in-from-left');
           questionContainer.classList.add('active');
-        }, 50);
+        });
       } else {
         questionContainer.classList.add('active');
       }
