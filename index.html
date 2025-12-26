@@ -914,6 +914,9 @@
         // Clear all animation classes
         questionContainer.classList.remove('slide-out-left', 'slide-out-right', 'slide-in-from-left', 'slide-in-from-right', 'active');
 
+        // DISABLE transition temporarily to instantly jump to starting position
+        questionContainer.style.transition = 'none';
+
         // Set starting position based on direction (moves content off-screen)
         if (direction === 'forward') {
           questionContainer.classList.add('slide-in-from-right');
@@ -921,8 +924,11 @@
           questionContainer.classList.add('slide-in-from-left');
         }
 
-        // Force reflow to apply position
+        // Force reflow to apply position instantly
         void questionContainer.offsetWidth;
+
+        // RE-ENABLE transition for the slide-in animation
+        questionContainer.style.transition = '';
       }
 
       // STEP 2: Update content while it's off-screen
