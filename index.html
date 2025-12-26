@@ -916,9 +916,9 @@
 
         // Set starting position based on direction (moves content off-screen)
         if (direction === 'forward') {
-          questionContainer.classList.add('slide-in-from-left');
-        } else if (direction === 'backward') {
           questionContainer.classList.add('slide-in-from-right');
+        } else if (direction === 'backward') {
+          questionContainer.classList.add('slide-in-from-left');
         }
 
         // Force reflow to apply position
