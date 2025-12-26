@@ -909,6 +909,23 @@
 
       console.log('Question data:', question);
 
+      // STEP 1: Set animation starting position BEFORE updating content
+      if (direction !== 'none') {
+        // Clear all animation classes
+        questionContainer.classList.remove('slide-out-left', 'slide-out-right', 'slide-in-from-left', 'slide-in-from-right', 'active');
+
+        // Set starting position based on direction (moves content off-screen)
+        if (direction === 'forward') {
+          questionContainer.classList.add('slide-in-from-right');
+        } else if (direction === 'backward') {
+          questionContainer.classList.add('slide-in-from-left');
+        }
+
+        // Force reflow to apply position
+        void questionContainer.offsetWidth;
+      }
+
+      // STEP 2: Update content while it's off-screen
       questionNumber.textContent = `Question ${currentQuestion + 1} of ${questions.length}`;
       questionTitle.textContent = question.title;
 
@@ -958,22 +975,8 @@
         }
       }
 
-      // Handle slide animation based on direction
+      // STEP 3: Animate to center
       if (direction !== 'none') {
-        // Clear all animation classes
-        questionContainer.classList.remove('slide-out-left', 'slide-out-right', 'slide-in-from-left', 'slide-in-from-right', 'active');
-
-        // Set starting position based on direction
-        if (direction === 'forward') {
-          questionContainer.classList.add('slide-in-from-right');
-        } else if (direction === 'backward') {
-          questionContainer.classList.add('slide-in-from-left');
-        }
-
-        // Force reflow to ensure starting position is applied
-        void questionContainer.offsetWidth;
-
-        // Trigger animation to center using requestAnimationFrame
         requestAnimationFrame(() => {
           questionContainer.classList.remove('slide-in-from-right', 'slide-in-from-left');
           questionContainer.classList.add('active');
