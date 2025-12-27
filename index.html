@@ -332,7 +332,6 @@
       max-width: 1000px;
       width: 100%;
       position: relative;
-      transition: all 0.4s ease;
     }
 
     .magazine-cover {
@@ -342,6 +341,9 @@
       opacity: 0;
       transform: translateY(30px);
       transition: opacity 0.6s ease, transform 0.6s ease;
+      cursor: pointer;
+      position: relative;
+      z-index: 2;
     }
 
     .magazine-cover.animate-in {
@@ -353,11 +355,11 @@
       width: 100%;
       height: auto;
       display: block;
-      transition: transform 0.4s ease;
     }
 
     .magazine-description {
-      flex: 1;
+      position: absolute;
+      right: 0;
       opacity: 0;
       transform: translateX(-20px);
       transition: opacity 0.4s ease, transform 0.4s ease;
@@ -366,6 +368,8 @@
       line-height: 1.8;
       color: #000;
       max-width: 500px;
+      pointer-events: none;
+      z-index: 1;
     }
 
     .magazine-description p {
@@ -375,14 +379,15 @@
     .magazine-description a {
       color: #000;
       text-decoration: underline;
+      pointer-events: auto;
     }
 
-    /* Hover state */
-    .magazine-container:hover .magazine-cover {
-      transform: translateX(-30px) translateY(0);
+    /* Hover state - only when hovering over the cover */
+    .magazine-cover:hover {
+      transform: translateX(-150px) translateY(0);
     }
 
-    .magazine-container:hover .magazine-description {
+    .magazine-cover:hover ~ .magazine-description {
       opacity: 1;
       transform: translateX(0);
     }
@@ -668,18 +673,17 @@
       }
 
       .magazine-description {
+        position: static;
         text-align: center;
         font-size: 0.85rem;
+        opacity: 1;
+        transform: translateX(0);
+        margin-top: 2rem;
       }
 
       /* Disable hover effect on mobile */
-      .magazine-container:hover .magazine-cover {
+      .magazine-cover:hover {
         transform: translateY(0);
-      }
-
-      .magazine-container:hover .magazine-description {
-        opacity: 1;
-        transform: translateX(0);
       }
 
       .accessories-grid {
