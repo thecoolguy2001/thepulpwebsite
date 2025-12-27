@@ -261,12 +261,18 @@
       z-index: 100;
       background: #fff;
       padding: 2rem;
+      opacity: 0;
+      transition: opacity 0.6s ease;
     }
 
     .email-screen.visible {
       display: flex !important;
       align-items: center;
       justify-content: center;
+    }
+
+    .email-screen.fade-in {
+      opacity: 1;
     }
 
     .email-container {
@@ -319,21 +325,66 @@
     }
 
     .magazine-container {
-      text-align: center;
-      max-width: 800px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 3rem;
+      max-width: 1000px;
       width: 100%;
+      position: relative;
+      transition: all 0.4s ease;
     }
 
     .magazine-cover {
+      flex: 0 0 auto;
       max-width: 400px;
       width: 100%;
-      margin: 0 auto 2rem auto;
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+
+    .magazine-cover.animate-in {
+      opacity: 1;
+      transform: translateY(0);
     }
 
     .magazine-cover img {
       width: 100%;
       height: auto;
       display: block;
+      transition: transform 0.4s ease;
+    }
+
+    .magazine-description {
+      flex: 1;
+      opacity: 0;
+      transform: translateX(-20px);
+      transition: opacity 0.4s ease, transform 0.4s ease;
+      text-align: left;
+      font-size: 0.9rem;
+      line-height: 1.8;
+      color: #000;
+      max-width: 500px;
+    }
+
+    .magazine-description p {
+      margin-bottom: 1rem;
+    }
+
+    .magazine-description a {
+      color: #000;
+      text-decoration: underline;
+    }
+
+    /* Hover state */
+    .magazine-container:hover .magazine-cover {
+      transform: translateX(-30px) translateY(0);
+    }
+
+    .magazine-container:hover .magazine-description {
+      opacity: 1;
+      transform: translateX(0);
     }
 
     .buy-btn {
@@ -347,6 +398,10 @@
       color: #000;
       padding: 0;
       transition: opacity 0.2s ease;
+      margin-top: 3rem;
+      display: block;
+      margin-left: auto;
+      margin-right: auto;
     }
 
     .buy-btn:hover {
@@ -603,8 +658,28 @@
         font-size: 0.9rem;
       }
 
+      .magazine-container {
+        flex-direction: column;
+        gap: 2rem;
+      }
+
       .magazine-cover {
         max-width: 300px;
+      }
+
+      .magazine-description {
+        text-align: center;
+        font-size: 0.85rem;
+      }
+
+      /* Disable hover effect on mobile */
+      .magazine-container:hover .magazine-cover {
+        transform: translateY(0);
+      }
+
+      .magazine-container:hover .magazine-description {
+        opacity: 1;
+        transform: translateX(0);
       }
 
       .accessories-grid {
@@ -659,8 +734,14 @@
         <div class="magazine-cover">
           <img src="assets/magazine-cover.png" alt="Magazine Cover" id="magazine-cover-img">
         </div>
-        <button class="buy-btn" onclick="showAccessories()">buy now</button>
+        <div class="magazine-description">
+          <p>October is bringing a massive lineup of new and classic movies and shows to streaming services like Netflix, Hulu, and Peacock.</p>
+          <p>Some highlights include The Conjuring series, Interview with the Vampire (1994), and Tim Burton's Corpse Bride. Horror fans will have plenty to binge this Halloween season, with titles like Freddy vs. Jason and The Purge films.</p>
+          <p>Additionally, Netflix is premiering new original content, including The Platform 2 and Dinner Time Live.</p>
+          <p>Source: <a href="https://comicbook.com" target="_blank">comicbook.com</a></p>
+        </div>
       </div>
+      <button class="buy-btn" onclick="showAccessories()">buy now</button>
     </div>
 
     <!-- Accessories Screen -->
@@ -1157,6 +1238,11 @@
       // Show email screen
       emailScreen.classList.add('visible');
 
+      // Trigger fade-in animation after a brief delay
+      requestAnimationFrame(() => {
+        emailScreen.classList.add('fade-in');
+      });
+
       // Auto-advance on Enter key
       emailInput.addEventListener('keypress', function(e) {
         if (e.key === 'Enter' && emailInput.value.trim()) {
@@ -1183,6 +1269,12 @@
 
       // Show magazine screen
       magazineScreen.classList.add('visible');
+
+      // Trigger magazine cover fade-up animation
+      const magazineCover = document.querySelector('.magazine-cover');
+      requestAnimationFrame(() => {
+        magazineCover.classList.add('animate-in');
+      });
     }
 
     /**
