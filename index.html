@@ -328,27 +328,28 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 3rem;
-      max-width: 1000px;
+      gap: 2rem;
+      max-width: 1200px;
       width: 100%;
       position: relative;
+      min-height: 600px;
     }
 
     .magazine-cover {
-      flex: 0 0 auto;
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%) translateY(30px);
       max-width: 400px;
       width: 100%;
       opacity: 0;
-      transform: translateY(30px);
-      transition: opacity 0.6s ease, transform 0.6s ease;
+      transition: all 0.6s ease;
       cursor: pointer;
-      position: relative;
       z-index: 2;
     }
 
     .magazine-cover.animate-in {
       opacity: 1;
-      transform: translateY(0);
+      transform: translateX(-50%) translateY(0);
     }
 
     .magazine-cover img {
@@ -359,15 +360,15 @@
 
     .magazine-description {
       position: absolute;
-      right: 0;
+      right: 10%;
+      width: 45%;
+      max-width: 500px;
       opacity: 0;
-      transform: translateX(-20px);
-      transition: opacity 0.4s ease, transform 0.4s ease;
+      transition: opacity 0.4s ease;
       text-align: left;
       font-size: 0.9rem;
       line-height: 1.8;
       color: #000;
-      max-width: 500px;
       pointer-events: none;
       z-index: 1;
     }
@@ -384,12 +385,11 @@
 
     /* Hover state - only when hovering over the cover */
     .magazine-cover:hover {
-      transform: translateX(-150px) translateY(0);
+      transform: translateX(-80%) translateY(0);
     }
 
     .magazine-cover:hover ~ .magazine-description {
       opacity: 1;
-      transform: translateX(0);
     }
 
     .buy-btn {
@@ -666,10 +666,20 @@
       .magazine-container {
         flex-direction: column;
         gap: 2rem;
+        min-height: auto;
+        display: block;
+        padding: 2rem 0;
       }
 
       .magazine-cover {
+        position: static;
         max-width: 300px;
+        margin: 0 auto;
+        transform: none !important;
+      }
+
+      .magazine-cover.animate-in {
+        transform: none !important;
       }
 
       .magazine-description {
@@ -677,13 +687,13 @@
         text-align: center;
         font-size: 0.85rem;
         opacity: 1;
-        transform: translateX(0);
-        margin-top: 2rem;
+        width: 90%;
+        margin: 2rem auto 0;
       }
 
       /* Disable hover effect on mobile */
       .magazine-cover:hover {
-        transform: translateY(0);
+        transform: none !important;
       }
 
       .accessories-grid {
