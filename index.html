@@ -645,9 +645,18 @@
     }
 
     /* Submissions Screen Centering */
+    #submissions-screen {
+      height: 100vh;
+      overflow: hidden;
+      padding: 0;
+    }
+
     #submissions-screen .info-container {
-      max-height: calc(100vh - 8rem);
+      max-height: 80vh;
       overflow-y: auto;
+      width: 100%;
+      max-width: 600px;
+      padding: 0 1rem;
       scrollbar-width: thin; /* Firefox */
     }
 
