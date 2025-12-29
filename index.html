@@ -655,23 +655,43 @@
     }
 
     #submissions-screen .info-container {
-      max-height: 80vh;
-      overflow-y: auto;
       width: 100%;
       max-width: 600px;
-      padding: 2rem 1rem;
-      margin: 0; /* Remove margin auto to rely on flex centering */
-      scrollbar-width: thin;
+      padding: 0 1rem;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      /* Removed scrolling from container */
     }
 
     #submissions-screen .info-title {
       font-size: 1.5rem;
-      margin-bottom: 4rem;
+      margin-bottom: 3rem;
       text-align: center;
       width: 100%;
+      flex-shrink: 0;
     }
 
-    /* Webkit scrollbar styling for submissions */
+    #submissions-screen .submission-form {
+      max-height: 55vh;
+      overflow-y: auto;
+      padding-right: 1rem; /* Avoid scrollbar overlap */
+      scrollbar-width: thin;
+    }
+
+    /* Webkit scrollbar styling for submissions form */
+    #submissions-screen .submission-form::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    #submissions-screen .submission-form::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    #submissions-screen .submission-form::-webkit-scrollbar-thumb {
+      background-color: #000;
+      border-radius: 3px;
+    }
     #submissions-screen .info-container::-webkit-scrollbar {
       width: 6px;
     }
