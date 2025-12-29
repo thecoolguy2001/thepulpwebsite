@@ -649,6 +649,7 @@
       height: 100vh;
       overflow: hidden;
       padding: 0;
+      padding-top: 5vh; /* Push content down slightly */
       display: flex !important;
       align-items: center;
       justify-content: center;
@@ -656,12 +657,11 @@
 
     #submissions-screen .info-container {
       width: 100%;
-      max-width: 600px;
+      max-width: 900px;
       padding: 0 1rem;
       margin: 0;
       display: flex;
       flex-direction: column;
-      /* Removed scrolling from container */
     }
 
     #submissions-screen .info-title {
@@ -673,9 +673,9 @@
     }
 
     #submissions-screen .submission-form {
-      max-height: 55vh;
+      max-height: 50vh; /* Reduced height to help centering */
       overflow-y: auto;
-      padding-right: 1rem; /* Avoid scrollbar overlap */
+      padding: 0 2rem; /* Side padding inside form */
       scrollbar-width: thin;
     }
 
@@ -692,22 +692,9 @@
       background-color: #000;
       border-radius: 3px;
     }
-    #submissions-screen .info-container::-webkit-scrollbar {
-      width: 6px;
-    }
-
-    #submissions-screen .info-container::-webkit-scrollbar-track {
-      background: transparent;
-    }
-
-    #submissions-screen .info-container::-webkit-scrollbar-thumb {
-      background-color: #000;
-      border-radius: 3px;
-    }
 
     /* Submission Form Styles */
     .submission-form {
-      max-width: 600px;
       width: 100%;
       margin: 0 auto;
     }
