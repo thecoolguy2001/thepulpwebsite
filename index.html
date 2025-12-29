@@ -649,6 +649,9 @@
       height: 100vh;
       overflow: hidden;
       padding: 0;
+      display: flex !important;
+      align-items: center;
+      justify-content: center;
     }
 
     #submissions-screen .info-container {
@@ -656,8 +659,16 @@
       overflow-y: auto;
       width: 100%;
       max-width: 600px;
-      padding: 0 1rem;
-      scrollbar-width: thin; /* Firefox */
+      padding: 2rem 1rem;
+      margin: 0; /* Remove margin auto to rely on flex centering */
+      scrollbar-width: thin;
+    }
+
+    #submissions-screen .info-title {
+      font-size: 1.5rem;
+      margin-bottom: 4rem;
+      text-align: center;
+      width: 100%;
     }
 
     /* Webkit scrollbar styling for submissions */
