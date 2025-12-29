@@ -644,6 +644,27 @@
       opacity: 0.6;
     }
 
+    /* Submissions Screen Centering */
+    #submissions-screen .info-container {
+      max-height: calc(100vh - 8rem);
+      overflow-y: auto;
+      scrollbar-width: thin; /* Firefox */
+    }
+
+    /* Webkit scrollbar styling for submissions */
+    #submissions-screen .info-container::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    #submissions-screen .info-container::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    #submissions-screen .info-container::-webkit-scrollbar-thumb {
+      background-color: #000;
+      border-radius: 3px;
+    }
+
     /* Submission Form Styles */
     .submission-form {
       max-width: 600px;
