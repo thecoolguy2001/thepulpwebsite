@@ -339,8 +339,8 @@
       position: absolute;
       left: 50%;
       transform: translateX(-50%) translateY(30px);
-      max-width: 400px;
-      width: 100%;
+      max-width: 350px;
+      width: 35%;
       opacity: 0;
       transition: all 0.6s ease;
       cursor: pointer;
@@ -360,9 +360,8 @@
 
     .magazine-description {
       position: absolute;
-      right: 10%;
-      width: 45%;
-      max-width: 500px;
+      left: 52%;
+      width: 40%;
       opacity: 0;
       transition: opacity 0.4s ease;
       text-align: left;
@@ -371,6 +370,7 @@
       color: #000;
       pointer-events: none;
       z-index: 1;
+      padding-left: 2rem;
     }
 
     .magazine-description p {
@@ -385,7 +385,8 @@
 
     /* Hover state - only when hovering over the cover */
     .magazine-cover:hover {
-      transform: translateX(-80%) translateY(0);
+      left: 25%;
+      transform: translateX(-50%) translateY(0);
     }
 
     .magazine-cover:hover ~ .magazine-description {
