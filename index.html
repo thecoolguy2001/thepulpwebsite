@@ -597,7 +597,8 @@
       position: relative;
       z-index: 100;
       background: #fff;
-      padding: 2rem;
+      padding: 4rem 2rem;
+      overflow-y: auto;
     }
 
     .info-screen.visible {
@@ -610,6 +611,7 @@
       max-width: 600px;
       width: 100%;
       text-align: center;
+      margin: auto;
     }
 
     .info-title {
@@ -1053,11 +1055,6 @@
           <div class="form-group">
             <label class="form-label" for="submit-title">title</label>
             <input type="text" id="submit-title" class="form-input" required>
-          </div>
-
-          <div class="form-group">
-            <label class="form-label" for="submit-bio">bio (50 words max)</label>
-            <textarea id="submit-bio" class="form-textarea" maxlength="300" required></textarea>
           </div>
 
           <div class="form-group">
@@ -1648,7 +1645,6 @@
         category: document.getElementById('submit-category').value,
         style: document.getElementById('submit-style').value,
         title: document.getElementById('submit-title').value,
-        bio: document.getElementById('submit-bio').value,
         content: document.getElementById('submit-content').value,
         file: document.getElementById('submit-file').files[0]
       };
