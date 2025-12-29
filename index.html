@@ -589,6 +589,58 @@
       font-weight: 700;
     }
 
+    /* Info Screens (Contact & Submissions) */
+    .info-screen {
+      display: none;
+      min-height: 100vh;
+      position: relative;
+      z-index: 100;
+      background: #fff;
+      padding: 2rem;
+    }
+
+    .info-screen.visible {
+      display: flex !important;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .info-container {
+      max-width: 800px;
+      width: 100%;
+      text-align: left;
+    }
+
+    .info-title {
+      font-family: 'Fira Code', monospace;
+      font-size: 2rem;
+      font-weight: 400;
+      text-transform: lowercase;
+      margin-bottom: 3rem;
+      color: #000;
+    }
+
+    .info-content {
+      font-family: 'Fira Code', monospace;
+      font-size: 0.95rem;
+      line-height: 1.8;
+      color: #000;
+    }
+
+    .info-content p {
+      margin-bottom: 1.5rem;
+    }
+
+    .info-content a {
+      color: #000;
+      text-decoration: underline;
+      transition: opacity 0.2s ease;
+    }
+
+    .info-content a:hover {
+      opacity: 0.6;
+    }
+
     /* Transition Overlay - Simple Fade */
     .transition-overlay {
       display: none;
@@ -710,6 +762,15 @@
       .accessory-item img {
         max-width: 250px;
       }
+
+      .info-title {
+        font-size: 1.5rem;
+        margin-bottom: 2rem;
+      }
+
+      .info-content {
+        font-size: 0.85rem;
+      }
     }
   </style>
 </head>
@@ -718,9 +779,9 @@
   <img src="assets/logo.png" alt="The Pulp" class="welcome-logo" id="logo">
 
   <!-- Corner Navigation -->
-  <div class="corner-nav top-right">July, 2024 no 1.</div>
-  <div class="corner-nav bottom-left"><a href="#submissions">submissions</a></div>
-  <div class="corner-nav bottom-right"><a href="#contact">contact</a></div>
+  <div class="corner-nav top-right">jan, 2026 no 1.</div>
+  <div class="corner-nav bottom-left"><a href="#submissions" onclick="showSubmissionsPage(); return false;">submissions</a></div>
+  <div class="corner-nav bottom-right"><a href="#contact" onclick="showContactPage(); return false;">contact</a></div>
 
   <div class="container">
     <!-- Welcome Screen -->
@@ -797,6 +858,58 @@
 
       <h2 class="section-header">Merch</h2>
       <div class="products-grid" id="merch-grid"></div>
+    </div>
+
+    <!-- Contact Screen -->
+    <div class="info-screen" id="contact-screen">
+      <div class="info-container">
+        <h1 class="info-title">contact</h1>
+        <div class="info-content">
+          <p>for general inquiries:</p>
+          <p><a href="mailto:hello@thepulpmag.com">hello@thepulpmag.com</a></p>
+
+          <p>for advertising:</p>
+          <p><a href="mailto:ads@thepulpmag.com">ads@thepulpmag.com</a></p>
+
+          <p>for press:</p>
+          <p><a href="mailto:press@thepulpmag.com">press@thepulpmag.com</a></p>
+
+          <p>follow us:</p>
+          <p>
+            <a href="https://instagram.com/thepulpmag" target="_blank">instagram</a> /
+            <a href="https://twitter.com/thepulpmag" target="_blank">twitter</a> /
+            <a href="https://tiktok.com/@thepulpmag" target="_blank">tiktok</a>
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Submissions Screen -->
+    <div class="info-screen" id="submissions-screen">
+      <div class="info-container">
+        <h1 class="info-title">submissions</h1>
+        <div class="info-content">
+          <p>we're always looking for fresh voices and perspectives.</p>
+
+          <p>what we publish:</p>
+          <p>- long-form journalism<br>
+          - personal essays<br>
+          - cultural criticism<br>
+          - photography & visual art<br>
+          - poetry & fiction</p>
+
+          <p>submission guidelines:</p>
+          <p>- send previously unpublished work only<br>
+          - include a brief bio (50 words max)<br>
+          - attach work as a .doc, .docx, or .pdf<br>
+          - expect a response within 4-6 weeks</p>
+
+          <p>submit to:</p>
+          <p><a href="mailto:submissions@thepulpmag.com">submissions@thepulpmag.com</a></p>
+
+          <p>please note: we do not accept simultaneous submissions.</p>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -915,6 +1028,8 @@
     const magazineScreen = document.getElementById('magazine-screen');
     const accessoriesScreen = document.getElementById('accessories-screen');
     const productScreen = document.getElementById('product-screen');
+    const contactScreen = document.getElementById('contact-screen');
+    const submissionsScreen = document.getElementById('submissions-screen');
     const questionContainer = document.getElementById('question-container');
     const backBtnQuiz = document.getElementById('back-btn-quiz');
     const continueBtn = document.getElementById('continue-btn');
@@ -1263,19 +1378,12 @@
         emailScreen.classList.add('fade-in');
       });
 
-      // Auto-advance on Enter key
+      // Only advance on Enter key press
       emailInput.addEventListener('keypress', function(e) {
         if (e.key === 'Enter' && emailInput.value.trim()) {
           showMagazineScreen();
         }
       });
-
-      // Auto-advance after 2 seconds or on blur if email is entered
-      setTimeout(() => {
-        if (emailInput.value.trim()) {
-          showMagazineScreen();
-        }
-      }, 3000);
     }
 
     /**
@@ -1311,6 +1419,56 @@
     }
 
     /**
+     * Shows contact page
+     */
+    function showContactPage() {
+      console.log('📞 Showing contact page...');
+
+      // Hide all other screens
+      welcomeScreen.classList.add('hidden');
+      quizScreen.classList.remove('visible');
+      emailScreen.classList.remove('visible');
+      magazineScreen.classList.remove('visible');
+      accessoriesScreen.classList.remove('visible');
+      productScreen.classList.remove('visible');
+      submissionsScreen.classList.remove('visible');
+
+      // Show contact screen
+      contactScreen.classList.add('visible');
+
+      // Animate logo to corner if not already
+      if (!logoAnimated) {
+        logo.classList.add('animated');
+        logoAnimated = true;
+      }
+    }
+
+    /**
+     * Shows submissions page
+     */
+    function showSubmissionsPage() {
+      console.log('📝 Showing submissions page...');
+
+      // Hide all other screens
+      welcomeScreen.classList.add('hidden');
+      quizScreen.classList.remove('visible');
+      emailScreen.classList.remove('visible');
+      magazineScreen.classList.remove('visible');
+      accessoriesScreen.classList.remove('visible');
+      productScreen.classList.remove('visible');
+      contactScreen.classList.remove('visible');
+
+      // Show submissions screen
+      submissionsScreen.classList.add('visible');
+
+      // Animate logo to corner if not already
+      if (!logoAnimated) {
+        logo.classList.add('animated');
+        logoAnimated = true;
+      }
+    }
+
+    /**
      * Resets application state and returns to welcome screen
      * Includes smooth transition effects
      */
@@ -1330,6 +1488,8 @@
         emailScreen.classList.remove('visible');
         magazineScreen.classList.remove('visible');
         accessoriesScreen.classList.remove('visible');
+        contactScreen.classList.remove('visible');
+        submissionsScreen.classList.remove('visible');
         welcomeScreen.classList.remove('hidden');
         logo.classList.remove('animated');
         emailInput.value = '';
