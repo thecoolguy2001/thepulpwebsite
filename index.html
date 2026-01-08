@@ -1086,26 +1086,69 @@
               <label class="form-label" for="submit-email">email</label>
               <input type="email" id="submit-email" class="form-input" required>
             </div>
-
-            <div class="form-group" style="text-align: center;">
-              <button type="button" class="nav-btn" onclick="nextStep(1)">continue →</button>
-            </div>
           </div>
 
           <!-- Step 2: Categorization -->
           <div class="form-step" id="step-2" style="display: none;">
-            ...
-            <div class="form-group" style="text-align: center;">
-              <button type="button" class="nav-btn" onclick="nextStep(2)">continue →</button>
+            <div class="form-group">
+              <label class="form-label">submission type</label>
+              <div class="form-checkbox-group">
+                <label class="form-checkbox-label">
+                  <input type="checkbox" id="type-story" class="form-checkbox" value="story">
+                  <span>story</span>
+                </label>
+                <label class="form-checkbox-label">
+                  <input type="checkbox" id="type-artwork" class="form-checkbox" value="artwork">
+                  <span>artwork</span>
+                </label>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="submit-category">category</label>
+              <select id="submit-category" class="form-select">
+                <option value="">select category</option>
+                <option value="pulp">pulp</option>
+                <option value="news">news</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="submit-style">style</label>
+              <select id="submit-style" class="form-select">
+                <option value="">select style</option>
+                <option value="journalism">journalism</option>
+                <option value="essay">personal essay</option>
+                <option value="criticism">cultural criticism</option>
+                <option value="photography">photography</option>
+                <option value="poetry">poetry</option>
+                <option value="fiction">fiction</option>
+                <option value="other">other</option>
+              </select>
             </div>
           </div>
 
           <!-- Step 3: Content -->
           <div class="form-step" id="step-3" style="display: none;">
-            ...
-            <div class="form-group" style="text-align: center;">
-              <button type="submit" class="nav-btn">submit</button>
+            <div class="form-group">
+              <label class="form-label" for="submit-title">title</label>
+              <input type="text" id="submit-title" class="form-input">
             </div>
+
+            <div class="form-group">
+              <label class="form-label" for="submit-content">your work</label>
+              <textarea id="submit-content" class="form-textarea" placeholder="paste your text here or upload a file below..." style="min-height: 200px;"></textarea>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="submit-file">or upload file (.doc, .docx, .pdf, .jpg, .png)</label>
+              <input type="file" id="submit-file" class="file-input" accept=".doc,.docx,.pdf,.jpg,.jpeg,.png">
+            </div>
+          </div>
+
+          <div class="quiz-navigation" id="submission-nav" style="display: none;">
+            <button type="button" class="nav-btn hidden" id="submit-back-btn" onclick="prevSubmissionStep()">← back</button>
+            <button type="button" class="nav-btn" id="submit-next-btn" onclick="handleSubmissionNav()">continue →</button>
           </div>
 
         </form>
@@ -1643,6 +1686,8 @@
       }
     }
 
+    let currentSubmissionStep = 1;
+
     /**
      * Shows submissions page
      */
@@ -1662,11 +1707,8 @@
       submissionsScreen.classList.add('visible');
 
       // Reset form steps
-      if (document.getElementById('step-1')) {
-        document.getElementById('step-1').style.display = 'block';
-        document.getElementById('step-2').style.display = 'none';
-        document.getElementById('step-3').style.display = 'none';
-      }
+      currentSubmissionStep = 1;
+      updateSubmissionSteps();
 
       // Animate logo to corner if not already
       if (!logoAnimated) {
@@ -1676,19 +1718,63 @@
     }
 
     /**
-     * Handles multi-step submission form navigation
+     * Updates visibility of submission form steps and navigation buttons
      */
-    function nextStep(currentStep) {
-      if (currentStep === 1) {
+    function updateSubmissionSteps() {
+      // Update form steps visibility
+      for (let i = 1; i <= 3; i++) {
+        const step = document.getElementById(`step-${i}`);
+        if (step) {
+          step.style.display = i === currentSubmissionStep ? 'block' : 'none';
+        }
+      }
+
+      // Update navigation buttons
+      const navContainer = document.getElementById('submission-nav');
+      const backBtn = document.getElementById('submit-back-btn');
+      const nextBtn = document.getElementById('submit-next-btn');
+
+      if (navContainer) {
+        navContainer.style.display = 'flex';
+        
+        // Back button: hidden on first step
+        if (currentSubmissionStep === 1) {
+          backBtn.classList.add('hidden');
+        } else {
+          backBtn.classList.remove('hidden');
+        }
+
+        // Next/Submit button text
+        if (currentSubmissionStep === 3) {
+          nextBtn.textContent = 'submit';
+        } else {
+          nextBtn.textContent = 'continue →';
+        }
+      }
+    }
+
+    /**
+     * Handles back navigation in submission form
+     */
+    function prevSubmissionStep() {
+      if (currentSubmissionStep > 1) {
+        currentSubmissionStep--;
+        updateSubmissionSteps();
+      }
+    }
+
+    /**
+     * Handles step-by-step navigation logic
+     */
+    function handleSubmissionNav() {
+      if (currentSubmissionStep === 1) {
         const name = document.getElementById('submit-name').value.trim();
         const email = document.getElementById('submit-email').value.trim();
         if (!name || !email) {
           alert('please enter your name and email');
           return;
         }
-        document.getElementById('step-1').style.display = 'none';
-        document.getElementById('step-2').style.display = 'block';
-      } else if (currentStep === 2) {
+      } else if (currentSubmissionStep === 2) {
         const typeStory = document.getElementById('type-story').checked;
         const typeArtwork = document.getElementById('type-artwork').checked;
         const category = document.getElementById('submit-category').value;
@@ -1706,8 +1792,18 @@
           alert('please select a style');
           return;
         }
-        document.getElementById('step-2').style.display = 'none';
-        document.getElementById('step-3').style.display = 'block';
+      }
+
+      if (currentSubmissionStep < 3) {
+        currentSubmissionStep++;
+        updateSubmissionSteps();
+      } else {
+        // Trigger form submission on step 3
+        const form = document.getElementById('submission-form');
+        // Check HTML5 validation for step 3 if any, then submit
+        if (form.reportValidity()) {
+          handleSubmission(new Event('submit'));
+        }
       }
     }
 
@@ -1715,7 +1811,7 @@
      * Handles submission form
      */
     function handleSubmission(event) {
-      event.preventDefault();
+      if (event) event.preventDefault();
 
       // Get form values
       const formData = {
@@ -1737,13 +1833,13 @@
         formData.types.push('artwork');
       }
 
-      // Validate title
+      // Validate title for step 3
       if (!formData.title.trim()) {
         alert('please enter a title for your work');
         return;
       }
 
-      // Validate content or file
+      // Validate content or file for step 3
       if (!formData.content.trim() && !formData.file) {
         alert('please provide your work either by pasting text or uploading a file');
         return;
@@ -1751,20 +1847,20 @@
 
       console.log('📤 Submission data:', formData);
 
-      // Here you would normally send the data to a server
-      // For now, just show a success message
+      // Success message
       alert('thank you for your submission! we will review it and get back to you within 4-6 weeks.');
 
       // Reset form and steps
       document.getElementById('submission-form').reset();
-      document.getElementById('step-1').style.display = 'block';
-      document.getElementById('step-2').style.display = 'none';
-      document.getElementById('step-3').style.display = 'none';
+      currentSubmissionStep = 1;
+      updateSubmissionSteps();
+      
+      // Hide navigation when not on submissions screen
+      document.getElementById('submission-nav').style.display = 'none';
     }
 
     /**
      * Resets application state and returns to welcome screen
-     * Includes smooth transition effects
      */
     function restartQuiz() {
       console.log('🔄 Restarting quiz...');
@@ -1787,6 +1883,11 @@
         welcomeScreen.classList.remove('hidden');
         logo.classList.remove('animated');
         emailInput.value = '';
+        
+        // Hide submission nav
+        const subNav = document.getElementById('submission-nav');
+        if (subNav) subNav.style.display = 'none';
+        
         console.log('✅ Reset complete');
       });
     }
