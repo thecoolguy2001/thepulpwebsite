@@ -688,7 +688,7 @@
       margin: 0;
       display: flex;
       flex-direction: column;
-      transform: translateY(-2vh); /* Slightly lowered to match quiz exactly */
+      transform: translateY(-4vh);
     }
 
     #submissions-screen .info-title {
@@ -1152,12 +1152,12 @@
             </div>
           </div>
 
-          <div class="quiz-navigation" id="submission-nav" style="display: none;">
-            <button type="button" class="nav-btn hidden" id="submit-back-btn" onclick="prevSubmissionStep()">← back</button>
-            <button type="button" class="nav-btn" id="submit-next-btn" onclick="handleSubmissionNav()">continue →</button>
-          </div>
-
         </form>
+      </div>
+      
+      <div class="quiz-navigation" id="submission-nav" style="display: none;">
+        <button type="button" class="nav-btn hidden" id="submit-back-btn" onclick="prevSubmissionStep()">← back</button>
+        <button type="button" class="nav-btn" id="submit-next-btn" onclick="handleSubmissionNav()">continue →</button>
       </div>
     </div>
   </div>
