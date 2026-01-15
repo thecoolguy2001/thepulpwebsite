@@ -52,6 +52,11 @@
       transition: opacity 0.2s ease;
     }
 
+    .corner-nav a:hover,
+    .corner-nav a.active {
+      text-decoration: underline;
+    }
+
     .corner-nav a:hover {
       opacity: 0.6;
     }
@@ -240,6 +245,7 @@
 
     .nav-btn:hover {
       opacity: 0.6;
+      text-decoration: underline;
     }
 
     .nav-btn.disabled {
@@ -989,8 +995,8 @@
 
   <!-- Corner Navigation -->
   <div class="corner-nav top-right">jan, 2026 no 1.</div>
-  <div class="corner-nav bottom-left"><a href="#submissions" onclick="showSubmissionsPage(); return false;">submissions</a></div>
-  <div class="corner-nav bottom-right"><a href="#contact" onclick="showContactPage(); return false;">contact</a></div>
+  <div class="corner-nav bottom-left"><a href="#submissions" id="submissions-link" onclick="showSubmissionsPage(); return false;">submissions</a></div>
+  <div class="corner-nav bottom-right"><a href="#contact" id="contact-link" onclick="showContactPage(); return false;">contact</a></div>
 
   <div class="container">
     <!-- Welcome Screen -->
@@ -1297,6 +1303,25 @@
     const answersGrid = document.getElementById('answers-grid');
     const emailInput = document.getElementById('email-input');
 
+    /**
+     * Updates active state of corner navigation links
+     * @param {string} activePage - 'submissions', 'contact', or 'none'
+     */
+    function updateNavActiveStates(activePage) {
+      const subLink = document.getElementById('submissions-link');
+      const contactLink = document.getElementById('contact-link');
+      
+      if (subLink) {
+        if (activePage === 'submissions') subLink.classList.add('active');
+        else subLink.classList.remove('active');
+      }
+      
+      if (contactLink) {
+        if (activePage === 'contact') contactLink.classList.add('active');
+        else contactLink.classList.remove('active');
+      }
+    }
+
     // Configuration
     const DETECT_RADIUS = 300;
     const LOGO_ANIMATION_DURATION = 800;
@@ -1346,6 +1371,7 @@
     function animateLogoAndStartQuiz() {
       if (logoAnimated) return;
       logoAnimated = true;
+      updateNavActiveStates('none');
 
       console.log('🎯 Logo triggered! Starting animation...');
 
@@ -1573,6 +1599,7 @@
     function showProducts() {
       const topCategory = calculateTopCategory();
       const category = productCategories[topCategory] || productCategories.minimal;
+      updateNavActiveStates('none');
 
       console.log('🛍️ Showing products for category:', category.title);
 
@@ -1625,6 +1652,7 @@
      */
     function showEmailScreen() {
       console.log('📧 Showing email screen...');
+      updateNavActiveStates('none');
 
       // Hide quiz screen
       quizScreen.classList.remove('visible');
@@ -1650,6 +1678,7 @@
      */
     function showMagazineScreen() {
       console.log('📖 Showing magazine screen...');
+      updateNavActiveStates('none');
 
       // Hide email screen
       emailScreen.classList.remove('visible');
@@ -1668,7 +1697,8 @@
      * Shows accessories screen
      */
     function showAccessories() {
-      console.log('🛍️ Showing accessories screen...');
+      console.log('🎒 Showing accessories screen...');
+      updateNavActiveStates('none');
 
       // Hide magazine screen
       magazineScreen.classList.remove('visible');
@@ -1682,6 +1712,7 @@
      */
     function showContactPage() {
       console.log('📞 Showing contact page...');
+      updateNavActiveStates('contact');
 
       // Hide all other screens
       welcomeScreen.classList.add('hidden');
@@ -1709,6 +1740,7 @@
      */
     function showSubmissionsPage() {
       console.log('📝 Showing submissions page...');
+      updateNavActiveStates('submissions');
 
       // Hide all other screens
       welcomeScreen.classList.add('hidden');
@@ -1880,6 +1912,7 @@
      */
     function restartQuiz() {
       console.log('🔄 Restarting quiz...');
+      updateNavActiveStates('none');
 
       playTransition(() => {
         // Reset state
