@@ -89,6 +89,8 @@
       transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
       cursor: pointer;
       z-index: 1000;
+      user-select: none;
+      -webkit-user-select: none;
     }
 
     .welcome-logo.animated {
@@ -97,8 +99,10 @@
       transform: translate(0, 0);
       height: 60px;
       position: fixed;
-      z-index: 1000;
+      z-index: 1002;
       cursor: pointer;
+      pointer-events: auto;
+      -webkit-user-drag: none;
     }
 
     /* Quiz Screen */
@@ -336,6 +340,8 @@
       position: relative;
       min-height: 600px;
       margin: 0 auto;
+      /* Ensure the container itself captures hover for both items */
+      pointer-events: auto;
     }
 
     .magazine-cover {
@@ -366,7 +372,7 @@
       left: 50%;
       width: 50%;
       opacity: 0;
-      transition: opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+      transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
       text-align: left;
       font-size: 0.9rem;
       line-height: 1.8;
@@ -387,13 +393,13 @@
       pointer-events: auto;
     }
 
-    /* Hover state - only when hovering over the cover */
-    .magazine-cover:hover {
+    /* Hover state - controlled by the parent container to prevent glitching */
+    .magazine-container:hover .magazine-cover {
       left: 25%;
       transform: translateX(-50%) translateY(0);
     }
 
-    .magazine-cover:hover ~ .magazine-description {
+    .magazine-container:hover .magazine-description {
       opacity: 1;
     }
 
@@ -1029,6 +1035,10 @@
       <div class="email-container">
         <div class="email-label">enter your email</div>
         <input type="email" class="email-input" id="email-input" placeholder="">
+      </div>
+      <div class="quiz-navigation">
+        <button class="nav-btn" onclick="backFromEmail()">← back</button>
+        <button class="nav-btn" onclick="submitEmail()">submit →</button>
       </div>
     </div>
 
@@ -1672,13 +1682,28 @@
       requestAnimationFrame(() => {
         emailScreen.classList.add('fade-in');
       });
+    }
 
-      // Only advance on Enter key press
-      emailInput.addEventListener('keypress', function(e) {
-        if (e.key === 'Enter' && emailInput.value.trim()) {
-          showMagazineScreen();
-        }
-      });
+    /**
+     * Handles back navigation from email screen
+     */
+    function backFromEmail() {
+      console.log('⬅️ Going back to quiz from email');
+      emailScreen.classList.remove('visible');
+      emailScreen.classList.remove('fade-in');
+      quizScreen.classList.add('visible');
+      showQuestion('none'); // Show current question without slide animation
+    }
+
+    /**
+     * Validates and submits email
+     */
+    function submitEmail() {
+      if (emailInput.value.trim()) {
+        showMagazineScreen();
+      } else {
+        alert('please enter your email');
+      }
     }
 
     /**
@@ -1951,6 +1976,14 @@
 
     // Initialize application
     console.log('🚀 The Pulp - Interactive Experience Initialized');
+
+    // Handle email input Enter key
+    emailInput.addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') {
+        submitEmail();
+      }
+    });
+
     console.log('📚 Questions loaded:', questions.length);
     console.log('🏷️ Categories:', Object.keys(productCategories).length);
     console.log('👉 Move your mouse near the logo to begin!');
